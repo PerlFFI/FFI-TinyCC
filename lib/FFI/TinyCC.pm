@@ -67,13 +67,13 @@ use constant _set_error_func => FFI::Raw->new(
   FFI::Raw::ptr, FFI::Raw::ptr, FFI::Raw::ptr,
 );
 
-use constant _add_incude_path => FFI::Raw->new(
+use constant _add_include_path => FFI::Raw->new(
   _lib, 'tcc_add_include_path',
   FFI::Raw::int,
   FFI::Raw::ptr, FFI::Raw::str,
 );
 
-use constant _add_sysincude_path => FFI::Raw->new(
+use constant _add_sysinclude_path => FFI::Raw->new(
   _lib, 'tcc_add_sysinclude_path',
   FFI::Raw::int,
   FFI::Raw::ptr, FFI::Raw::str,
@@ -258,6 +258,36 @@ sub compile_string
   my($self, $code) = @_;
   my $r = _compile_string->call($self->{handle}, $code);
   die FFI::TinyCC::Exception->new($self) if $r == -1;
+  $self;
+}
+
+=head2 add_include_path
+
+ $tcc->add_include_path($path);
+
+Add the given path to the list of paths used to search for include files.
+
+=cut
+
+sub add_include_path
+{
+  my($self, $path) = @_;
+  _add_include_path->call($self->{handle}, $path);
+  $self;
+}
+
+=head2 add_sysinclude_path
+
+ $tcc->add_sysinclude_path($path);
+
+Add the given path to the list of paths used to search for system include files.
+
+=cut
+
+sub add_sysinclude_path
+{
+  my($self, $path) = @_;
+  _add_sysinclude_path->call($self->{handle}, $path);
   $self;
 }
 
