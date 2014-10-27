@@ -319,6 +319,37 @@ sub add_sysinclude_path
   $self;
 }
 
+=head3 define_symbol
+
+ $tcc->define_symbol($name => $value);
+ $tcc->define_symbol($name);
+
+Define the given symbol, optionally with the specified value.
+
+=cut
+
+sub define_symbol
+{
+  my($self, $name, $value) = @_;
+  _define_symbol->call($self->{handle}, $name, $value);
+  $self;
+}
+
+=head3 undefine_symbol
+
+ $tcc->undefine_symbol($name);
+
+Undefine the given symbol.
+
+=cut
+
+sub undefine_symbol
+{
+  my($self, $name) = @_;
+  _undefine_symbol->call($self->{handle}, $name);
+  $self;
+}
+
 =head2 Link / run
 
 =head3 run

@@ -6,6 +6,7 @@ pod_spelling_system:
   stopwords:
     - TinyCC
     - DLL
+    - Preprocessor
 
 pod_coverage:
   skip: 0
