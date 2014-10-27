@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use v5.10;
-use Test::More skip_all => 'not working';
 use Test::More tests => 3;
 use FFI::TinyCC;
 use FindBin ();

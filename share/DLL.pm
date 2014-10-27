@@ -60,7 +60,7 @@ sub tcc_build
       bsd_glob '*.o';
     };
 
-    my @cmd = ($tcc, '-o' => File::Spec->catfile($CWD, "libtcc.$Config{dlext}"), '-shared', @obj);
+    my @cmd = ($Config{cc}, '-o' => File::Spec->catfile($CWD, "libtcc.$Config{dlext}"), '-shared', @obj);
 
     print "% @cmd\n";
     system @cmd;
