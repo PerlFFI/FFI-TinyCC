@@ -29,7 +29,7 @@ use constant {
         File::Spec->updir,
         File::Spec->updir,
         'share',
-        'libtcc' . _dlext,
+        'libtcc.' . _dlext,
       ),
     );
   },
@@ -40,6 +40,9 @@ use constant {
   _TCC_OUTPUT_DLL        => 2,
   _TCC_OUTPUT_OBJ        => 3,
   _TCC_OUTPUT_PREPROCESS => 4,
+
+  # tcc_relocate
+  _TCC_RELOCATE_AUTO     => 1,
   
   # ??
   _TCC_OUTPUT_FORMAT_ELF    => 0,
@@ -163,7 +166,10 @@ Create a new TinyCC instance.
 sub new
 {
   my($class) = @_;
-  bless { handle => _new->call }, $class;
+  bless {
+    handle   => _new->call,
+    relocate => 0,
+  }, $class;
 }
 
 sub DESTROY
@@ -174,7 +180,101 @@ sub DESTROY
 
 =head1 METHODS
 
+Methods will generally throw an exception on failure.
+
+=head2 add_file
+
+ $tcc->add_file('foo.c');
+ $tcc->add_file('foo.o');
+ $tcc->add_file('foo.so'); # or dll on windows
+
+Add a file, DLL, shared object or object file.
+
 =cut
+
+sub add_file
+{
+  my($self, $filename) = @_;
+  my $r = _add_file->call($self->{handle}, $filename);
+  # FIXME: dumps core
+  # TODO: better diagnostic
+  die "unable to add $filename: $!" if $r == -1;
+  $self;
+}
+
+=head2 compile_string
+
+ $tcc->compile_string($c_code);
+
+Compile a string containing C source code.
+
+=cut
+
+sub compile_string
+{
+  my($self, $code) = @_;
+  my $r = _compile_string->call($self->{handle}, $code);
+  # TODO: better diagnostic
+  die "unable to compile" if $r == -1;
+  $self;
+}
+
+=head2 run
+
+ my $exit_value = $tcc->run(@arguments);
+
+=cut
+
+sub run
+{
+  my($self, @args) = @_;
+  die "unable to use run method after get_symbol" if $self->{relocate};
+  
+  my $argc = scalar @args;
+  my @c_strings = map { "$_\0" } @args;
+  my $ptrs = pack 'P' x $argc, @c_strings;
+  my $argv = unpack('L!', pack('P', $ptrs));
+
+  # TODO: does -1 mean an error?  
+  _run->call($self->{handle}, $argc, $argv);
+}
+
+=head2 get_symbol
+
+ my $pointer = $tcc->get_symbol($symbol_name);
+
+Return symbol value or undef if not found.  This can be passed into
+L<FFI::Raw> or similar for use in your script.
+
+=cut
+
+my $malloc = FFI::Raw->new(
+  undef, 'malloc',
+  FFI::Raw::ptr,
+  FFI::Raw::int,
+);
+
+my $free = FFI::Raw->new(
+  undef, 'free',
+  FFI::Raw::ptr,
+);
+
+sub get_symbol
+{
+  my($self, $symbol_name) = @_;
+  
+  unless($self->{relocate})
+  {
+    # FIXME: dumps core
+    my $size = _relocate->call($self->{handle}, undef);
+    $self->{store} = $malloc->call($size);
+    my $r = _relocate->call($self->{handle}, $self->{store});
+    # TODO: better diagnostic
+    die "unable to relocate" if $r == -1;
+    $self->{relocate} = 1;
+  }
+  _get_symbol->call($self->{handle}, $symbol_name);
+}
 
 1;
 
