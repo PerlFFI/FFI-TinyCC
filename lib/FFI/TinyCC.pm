@@ -153,6 +153,18 @@ use constant _set_lib_path => FFI::Raw->new(
   FFI::Raw::ptr, FFI::Raw::str,
 );
 
+use constant _malloc => FFI::Raw->new(
+  undef, 'malloc',
+  FFI::Raw::ptr,
+  FFI::Raw::int,
+);
+
+use constant _free => FFI::Raw->new(
+  undef, 'free',
+  FFI::Raw::void,
+  FFI::Raw::ptr,
+);
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -175,6 +187,7 @@ sub new
 sub DESTROY
 {
   my($self) = @_;
+  _free->call($self->{store}) if defined $self->{store};
   _delete->call($self->{handle});
 }
 
@@ -196,7 +209,6 @@ sub add_file
 {
   my($self, $filename) = @_;
   my $r = _add_file->call($self->{handle}, $filename);
-  # FIXME: dumps core
   # TODO: better diagnostic
   die "unable to add $filename: $!" if $r == -1;
   $self;
@@ -248,26 +260,14 @@ L<FFI::Raw> or similar for use in your script.
 
 =cut
 
-my $malloc = FFI::Raw->new(
-  undef, 'malloc',
-  FFI::Raw::ptr,
-  FFI::Raw::int,
-);
-
-my $free = FFI::Raw->new(
-  undef, 'free',
-  FFI::Raw::ptr,
-);
-
 sub get_symbol
 {
   my($self, $symbol_name) = @_;
   
   unless($self->{relocate})
   {
-    # FIXME: dumps core
     my $size = _relocate->call($self->{handle}, undef);
-    $self->{store} = $malloc->call($size);
+    $self->{store} = _malloc->call($size);
     my $r = _relocate->call($self->{handle}, $self->{store});
     # TODO: better diagnostic
     die "unable to relocate" if $r == -1;
