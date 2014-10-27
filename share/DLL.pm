@@ -13,6 +13,7 @@ use File::Glob qw( bsd_glob );
 use Config;
 use File::Basename qw( dirname );
 use base qw( Exporter );
+use File::Copy qw( copy );
 
 our @EXPORT = qw( tcc_clean tcc_build );
 
@@ -27,29 +28,43 @@ sub tcc_clean
 
 sub tcc_build
 {
-  local $CWD = $share;
-  print "$CWD\n";
-  my $lib = File::Spec->catfile(Alien::TinyCC->libtcc_library_path, 'libtcc.a');
-  my $tcc = File::Spec->catfile(Alien::TinyCC->path_to_tcc, 'tcc');
+  if($^O eq 'MSWin32')
+  {
+    local $CWD = $share;
+    copy(
+      File::Spec->catfile(
+        Alien::TinyCC->libtcc_library_path,
+        'libtcc.dll',
+      ),
+      'libtcc.dll',
+    ) || die "unable to copy $!";
+  }
+  else
+  {
+    local $CWD = $share;
+    print "$CWD\n";
+    my $lib = File::Spec->catfile(Alien::TinyCC->libtcc_library_path, 'libtcc.a');
+    my $tcc = File::Spec->catfile(Alien::TinyCC->path_to_tcc, 'tcc');
 
-  die "unable to find libtcc.a" unless -f $lib;
-  die "unable to find tcc" unless -f $tcc;
+    die "unable to find libtcc.a" unless -f $lib;
+    die "unable to find tcc" unless -f $tcc;
 
-  my $ar = Archive::Ar->new;
-  $ar->read($lib);
+    my $ar = Archive::Ar->new;
+    $ar->read($lib);
 
-  my $tmp = tempdir( CLEANUP => 1 );
+    my $tmp = tempdir( CLEANUP => 1 );
 
-  my @obj = map { File::Spec->catfile($tmp, $_) } do {
-    local $CWD = $tmp;
-    $ar->extract;
-    bsd_glob '*.o';
-  };
+    my @obj = map { File::Spec->catfile($tmp, $_) } do {
+      local $CWD = $tmp;
+      $ar->extract;
+      bsd_glob '*.o';
+    };
 
-  my @cmd = ($tcc, '-o' => File::Spec->catfile($CWD, "libtcc.$Config{dlext}"), '-shared', @obj);
+    my @cmd = ($tcc, '-o' => File::Spec->catfile($CWD, "libtcc.$Config{dlext}"), '-shared', @obj);
 
-  print "% @cmd\n";
-  system @cmd;
+    print "% @cmd\n";
+    system @cmd;
+  }
 }
 
 1;

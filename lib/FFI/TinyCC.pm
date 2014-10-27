@@ -16,9 +16,11 @@ use Config;
 
 =cut
 
+# recent strawberry Perl sets dlext to 'xs.dll'
+use constant _dlext => $^O eq 'MSWin32' ? 'dll' : $Config{dlext};
+
 use constant {
-  _lib => eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc.$Config{dlext}") : do {
-    my $dir;
+  _lib => eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
     require File::Spec;
     require File::Basename;
     File::Spec->rel2abs(
@@ -27,7 +29,7 @@ use constant {
         File::Spec->updir,
         File::Spec->updir,
         'share',
-        "libtcc.$Config{dlext}",
+        'libtcc' . _dlext,
       ),
     );
   },
