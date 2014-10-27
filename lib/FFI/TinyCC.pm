@@ -67,6 +67,12 @@ use constant _set_error_func => FFI::Raw->new(
   FFI::Raw::ptr, FFI::Raw::ptr, FFI::Raw::ptr,
 );
 
+use constant _set_options => FFI::Raw->new(
+  _lib, 'tcc_set_options',
+  FFI::Raw::int,
+  FFI::Raw::ptr, FFI::Raw::str,
+);
+
 use constant _add_include_path => FFI::Raw->new(
   _lib, 'tcc_add_include_path',
   FFI::Raw::int,
@@ -215,7 +221,7 @@ sub DESTROY
   # _delete and _free constants go bye bye sometimes.
   # since the process is going to end anyway, freeing
   # the resources for this instance can be skipped.
-  if(ref(_delete) eq 'FFI::Raw')
+  if(ref(_delete) eq 'FFI::Raw' && ref(_free) eq 'FFI::Raw')
   {  
     _delete->call($self->{handle});
     # TODO: maybe not a good idea?
@@ -227,7 +233,27 @@ sub DESTROY
 
 Methods will generally throw an exception on failure.
 
-=head2 add_file
+=head2 Compile
+
+=head3 set_options
+
+ $tcc->set_options($options);
+
+Set compile options, as you would on the command line, for example:
+
+ $tcc->set_options('-I/foo/include -L/foo/lib -DFOO=22');
+
+=cut
+
+sub set_options
+{
+  my($self, $options) = @_;
+  my $r = _set_options->call($self->{handle}, $options);
+  die FFI::TinyCC::Exception->new($self) if $r == -1;
+  $self;
+}
+
+=head3 add_file
 
  $tcc->add_file('foo.c');
  $tcc->add_file('foo.o');
@@ -245,7 +271,7 @@ sub add_file
   $self;
 }
 
-=head2 compile_string
+=head3 compile_string
 
  $tcc->compile_string($c_code);
 
@@ -261,7 +287,9 @@ sub compile_string
   $self;
 }
 
-=head2 add_include_path
+=head2 Preprocessor options
+
+=head3 add_include_path
 
  $tcc->add_include_path($path);
 
@@ -276,7 +304,7 @@ sub add_include_path
   $self;
 }
 
-=head2 add_sysinclude_path
+=head3 add_sysinclude_path
 
  $tcc->add_sysinclude_path($path);
 
@@ -291,7 +319,9 @@ sub add_sysinclude_path
   $self;
 }
 
-=head2 run
+=head2 Link / run
+
+=head3 run
 
  my $exit_value = $tcc->run(@arguments);
 
@@ -316,7 +346,7 @@ sub run
   _run->call($self->{handle}, $argc, $argv);
 }
 
-=head2 get_symbol
+=head3 get_symbol
 
  my $pointer = $tcc->get_symbol($symbol_name);
 
