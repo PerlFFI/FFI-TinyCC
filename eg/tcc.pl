@@ -1,48 +1,22 @@
-package FFI::TinyCC;
-
 use strict;
 use warnings;
 use v5.10;
 use FFI::Raw;
-use File::ShareDir ();
-use Config;
-
-# ABSTRACT: Tiny C Compiler for FFI
-# VERSION
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-=cut
 
 use constant {
-  _lib => eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc.$Config{dlext}") : do {
-    my $dir;
-    require File::Spec;
-    require File::Basename;
-    File::Spec->rel2abs(
-      File::Spec->catfile(
-        File::Basename::dirname($INC{'FFI/TinyCC.pm'}),
-        File::Spec->updir,
-        File::Spec->updir,
-        'share',
-        "libtcc.$Config{dlext}",
-      ),
-    );
-  },
+  _lib => 'lib/libtcc.so',
   
   # tcc_set_output_type
-  _TCC_OUTPUT_MEMORY     => 0,
-  _TCC_OUTPUT_EXE        => 1,
-  _TCC_OUTPUT_DLL        => 2,
-  _TCC_OUTPUT_OBJ        => 3,
-  _TCC_OUTPUT_PREPROCESS => 4,
+  TCC_OUTPUT_MEMORY     => 0,
+  TCC_OUTPUT_EXE        => 1,
+  TCC_OUTPUT_DLL        => 2,
+  TCC_OUTPUT_OBJ        => 3,
+  TCC_OUTPUT_PREPROCESS => 4,
   
   # ??
-  _TCC_OUTPUT_FORMAT_ELF    => 0,
-  _TCC_OUTPUT_FORMAT_BINARY => 1,
-  _TCC_OUTPUT_FORMAT_COFF   => 2,
+  TCC_OUTPUT_FORMAT_ELF    => 0,
+  TCC_OUTPUT_FORMAT_BINARY => 1,
+  TCC_OUTPUT_FORMAT_COFF   => 2,
 };
 
 use constant _new => FFI::Raw->new(
@@ -148,42 +122,18 @@ use constant _set_lib_path => FFI::Raw->new(
   FFI::Raw::ptr, FFI::Raw::str,
 );
 
-=head1 CONSTRUCTOR
+my $tcc = _new->call;
 
-=head2 new
-
- my $tcc = FFI::TinyCC->new;
-
-Create a new TinyCC instance.
-
-=cut
-
-sub new
+my $prog = <<EOF;
+int
+main(int argc, char *argv[])
 {
-  my($class) = @_;
-  bless { handle => _new->call }, $class;
+  printf("hi there\n");
 }
+EOF
 
-sub DESTROY
-{
-  my($self) = @_;
-  _delete->call($self->{handle});
-}
+_compile_string->call($tcc, $prog);
+_run->call($tcc, 0, undef);
 
-=head1 METHODS
+_delete->call($tcc);
 
-=cut
-
-1;
-
-=head1 SEE ALSO
-
-=over 4
-
-=item L<FFI::Raw>
-
-=item L<Alien::TinyCC>
-
-=back
-
-=cut
