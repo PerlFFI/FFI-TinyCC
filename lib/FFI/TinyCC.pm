@@ -8,6 +8,13 @@ use Carp qw( croak );
 use File::ShareDir ();
 use Config;
 
+# TODO:
+#   1. test for tcc_add_file with object, dll and library
+#   2. add_library_path method
+#   3. add_library method
+#   4. add_symbol method
+#   5. output_file method
+
 # ABSTRACT: Tiny C Compiler for FFI
 # VERSION
 
@@ -422,6 +429,33 @@ sub get_symbol
     $self->{relocate} = 1;
   }
   _get_symbol->call($self->{handle}, $symbol_name);
+}
+
+=head3 get_ffi_raw
+
+ my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
+
+Given the name of a function, return an L<FFI::Raw> instance that will allow you to call it from Perl.
+Example:
+
+ my $tcc = FFI::Raw->new;
+ 
+ $tcc->compile_string(q{
+   int calculate_square(int value) {
+     return value*value;
+   }
+ });
+ 
+ my $square = $tcc->get_ffi_raw('calculate_square');
+ say $square->call(4); # prints 16
+
+=cut
+
+sub get_ffi_raw
+{
+  my($self, $symbol, @types) = @_;
+  croak "you must at least specify a return type" unless @types > 0;
+  FFI::Raw->new_from_ptr($self->get_symbol($symbol), @types);
 }
 
 package

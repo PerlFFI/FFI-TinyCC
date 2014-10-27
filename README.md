@@ -91,6 +91,24 @@ Set the output type.  This must be called before any compilation.
 Return symbol value or undef if not found.  This can be passed into
 [FFI::Raw](https://metacpan.org/pod/FFI::Raw) or similar for use in your script.
 
+### get\_ffi\_raw
+
+    my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
+
+Given the name of a function, return an [FFI::Raw](https://metacpan.org/pod/FFI::Raw) instance that will allow you to call it from Perl.
+Example:
+
+    my $tcc = FFI::Raw->new;
+    
+    $tcc->compile_string(q{
+      int calculate_square(int value) {
+        return value*value;
+      }
+    });
+    
+    my $square = $tcc->get_ffi_raw('calculate_square');
+    say $square->call(4); # prints 16
+
 # SEE ALSO
 
 - [FFI::Raw](https://metacpan.org/pod/FFI::Raw)
