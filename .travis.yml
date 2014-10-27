@@ -7,10 +7,13 @@ install:
   - cpanm -n Dist::Zilla
   - dzil authordeps --missing | cpanm -n
   - cpanm -n Test::CPAN::Changes Test::EOL Test::Fixme Test::NoTabs Test::Pod::Spelling::CommonMistakes Test::Spelling Test::Strict Test::Version Test::Vars || true
-#  - cpanm -n Foo::Bar
+  - cpanm -n FFI::Raw
+  - cpanm -n autodie
+  - cpanm -n Alien::TinyCC
+  - cpanm -n Archive::Ar
+  - cpanm -n File::chdir
 
 perl:
-  - "5.8"
   - "5.10"
   - "5.12"
   - "5.14"
