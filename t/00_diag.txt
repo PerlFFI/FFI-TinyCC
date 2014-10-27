@@ -1,5 +1,6 @@
 Alien::TinyCC
 Archive::Ar
+Carp
 FFI::Raw
 File::ShareDir
 File::chdir

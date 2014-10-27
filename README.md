@@ -71,6 +71,15 @@ Undefine the given symbol.
 
 ## Link / run
 
+### set\_output\_type
+
+    $tcc->set_output_type('memory');
+    $tcc->set_output_type('exe');
+    $tcc->set_output_type('dll');
+    $tcc->set_output_type('obj');
+
+Set the output type.  This must be called before any compilation.
+
 ### run
 
     my $exit_value = $tcc->run(@arguments);

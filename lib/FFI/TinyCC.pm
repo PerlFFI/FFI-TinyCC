@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use v5.10;
 use FFI::Raw;
+use Carp qw( croak );
 use File::ShareDir ();
 use Config;
 
@@ -109,7 +110,7 @@ use constant _compile_string => FFI::Raw->new(
   FFI::Raw::ptr, FFI::Raw::str,
 );
 
-use constant _set_compile_string => FFI::Raw->new(
+use constant _set_output_type => FFI::Raw->new(
   _lib, 'tcc_set_output_type',
   FFI::Raw::int,
   FFI::Raw::ptr, FFI::Raw::int,
@@ -352,6 +353,32 @@ sub undefine_symbol
 
 =head2 Link / run
 
+=head3 set_output_type
+
+ $tcc->set_output_type('memory');
+ $tcc->set_output_type('exe');
+ $tcc->set_output_type('dll');
+ $tcc->set_output_type('obj');
+
+Set the output type.  This must be called before any compilation.
+
+=cut
+
+my %output_type = (
+  memory => 0,
+  exe    => 1,
+  dll    => 2,
+  obj    => 3,
+);
+
+sub set_output_type
+{
+  my($self, $type) = @_;
+  croak "unknown type: $type" unless defined $output_type{$type};
+  _set_output_type->call($self->{handle}, $output_type{$type});
+  $self;
+}
+
 =head3 run
 
  my $exit_value = $tcc->run(@arguments);
@@ -362,11 +389,7 @@ sub run
 {
   my($self, @args) = @_;
   
-  if($self->{relocate})
-  {
-    $self->{error} = ['unable to use run method after get_symbol'];
-    die FFI::TinyCC::Exception->new($self);
-  }
+  croak "unable to use run method after get_symbol" if $self->{relocate};
   
   my $argc = scalar @args;
   my @c_strings = map { "$_\0" } @args;
