@@ -102,9 +102,6 @@ subtest obj => sub
 
 subtest dll => sub {
 
-  # TODO: can probably fix this test by setting the export
-  # correctly.
-  plan skip_all => 'unsupported on windows' if $^O eq 'MSWin32';
   plan tests => 4;
 
   local $CWD = tempdir( CLEANUP => 1 );
@@ -116,9 +113,14 @@ subtest dll => sub {
   eval { $tcc->set_output_type('dll') };
   is $@, '', 'tcc.set_output_type(dll)';
   
+  $tcc->set_options('-D__WIN32__') if $^O eq 'MSWin32';
+  
   eval { $tcc->compile_string(q{
     int
     bar()
+#if __WIN32__
+    __attribute__((dllexport))
+#endif
     {
       return 47;
     }
