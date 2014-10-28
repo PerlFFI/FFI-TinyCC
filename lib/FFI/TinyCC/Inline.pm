@@ -104,6 +104,40 @@ sub _generate_sub ($$$)
   $sub;
 }
 
+=head1 OPTIONS
+
+You can specify tcc options using the scoped pragmata, like so:
+
+ use FFI::TinyCC::Inline options => "-I/foo/include -L/foo/lib -DFOO=1";
+ 
+ # prints 1
+ say tcc_eval q{
+ #include <foo.h> /* will search /foo/include
+ int main()
+ {
+   return FOO; /* defined and set to 1 */
+ }
+ };
+
+=cut
+
+sub import
+{
+  my($class, @rest) = @_;
+  
+  if(defined $rest[0] && defined $rest[1]
+  && $rest[0] eq 'options')
+  {
+    shift @rest;
+    $^H{"FFI::TinyCC::Inline/options"} = shift @rest;
+  }
+  
+  return unless @rest > 0;
+
+  @_ = ($class, @rest);
+  goto &Exporter::import;
+}
+
 =head1 FUNCTIONS
 
 =head2 tcc_inline
@@ -148,6 +182,11 @@ sub tcc_inline ($)
   my $caller = caller;
   
   my $tcc = FFI::TinyCC->new(_no_free_store => 1);
+  
+  my $h = (caller(0))[10];
+  if($h->{"FFI::TinyCC::Inline/options"})
+  { $tcc->set_options($h->{"FFI::TinyCC::Inline/options"}) }
+
   $tcc->compile_string($code);
   my $meta = FFI::TinyCC::Parser->extract_function_metadata($code);
   foreach my $func_name (keys %{ $meta->{functions} })
@@ -172,6 +211,11 @@ sub tcc_eval ($;@)
 {
   my($code, @args) = @_;
   my $tcc = FFI::TinyCC->new;
+  
+  my $h = (caller(0))[10];
+  if($h->{"FFI::TinyCC::Inline/options"})
+  { $tcc->set_options($h->{"FFI::TinyCC::Inline/options"}) }
+
   $tcc->compile_string($code);
   my $meta = FFI::TinyCC::Parser->extract_function_metadata($code);
   my $func = $meta->{functions}->{main};
