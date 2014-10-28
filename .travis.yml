@@ -12,6 +12,8 @@ install:
   - cpanm -n Alien::TinyCC
   - cpanm -n Archive::Ar
   - cpanm -n File::chdir
+  - cpanm -n Path::Class
+  - cpanm -n IPC::System::Simple
 
 perl:
   - "5.10"
@@ -21,12 +23,6 @@ perl:
   - "5.18"
   - "5.20"
 
-#env:
-#  - FOO=bar
-
-#before_script: /bin/true
-
 script:
   - dzil test -v
 
-#after_script: /bin/true
