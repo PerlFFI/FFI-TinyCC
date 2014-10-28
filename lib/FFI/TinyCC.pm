@@ -646,6 +646,10 @@ sub as_string
 
 =over 4
 
+=item L<Tiny C|http://bellard.org/tcc/>
+
+=item L<Tiny C Compiler Reference Documentation|http://bellard.org/tcc/tcc-doc.html>
+
 =item L<FFI::Raw>
 
 =item L<Alien::TinyCC>

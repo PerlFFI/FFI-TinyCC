@@ -199,6 +199,8 @@ method.
 
 # SEE ALSO
 
+- [Tiny C](http://bellard.org/tcc/)
+- [Tiny C Compiler Reference Documentation](http://bellard.org/tcc/tcc-doc.html)
 - [FFI::Raw](https://metacpan.org/pod/FFI::Raw)
 - [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC)
 
