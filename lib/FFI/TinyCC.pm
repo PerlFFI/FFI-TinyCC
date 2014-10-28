@@ -9,11 +9,9 @@ use File::ShareDir ();
 use Config;
 
 # TODO:
-#   1. test for tcc_add_file with object, dll and library
 #   2. add_library_path method
 #   3. add_library method
 #   4. add_symbol method
-#   5. output_file method
 
 # ABSTRACT: Tiny C Compiler for FFI
 # VERSION
@@ -456,6 +454,24 @@ sub get_ffi_raw
   my($self, $symbol, @types) = @_;
   croak "you must at least specify a return type" unless @types > 0;
   FFI::Raw->new_from_ptr($self->get_symbol($symbol), @types);
+}
+
+=head3 output_file
+
+ $tcc->output_file($filename);
+
+Output the generated code (either executable, object or DLL) to the given filename.
+The type of output is specified by the L<set_output_type|FFI::TinyCC#set_output_type>
+method.
+
+=cut
+
+sub output_file
+{
+  my($self, $filename) = @_;
+  my $r = _output_file->call($self->{handle}, $filename);
+  die FFI::TinyCC::Exception->new($self) if $r == -1;
+  $self;
 }
 
 package

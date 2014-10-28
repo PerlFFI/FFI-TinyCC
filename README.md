@@ -109,6 +109,14 @@ Example:
     my $square = $tcc->get_ffi_raw('calculate_square');
     say $square->call(4); # prints 16
 
+### output\_file
+
+    $tcc->output_file($filename);
+
+Output the generated code (either executable, object or DLL) to the given filename.
+The type of output is specified by the [set\_output\_type](https://metacpan.org/pod/FFI::TinyCC#set_output_type)
+method.
+
 # SEE ALSO
 
 - [FFI::Raw](https://metacpan.org/pod/FFI::Raw)
