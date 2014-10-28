@@ -258,7 +258,7 @@ sub DESTROY
   if(ref(_delete) eq 'FFI::Raw' && ref(_free) eq 'FFI::Raw')
   {  
     _delete->call($self->{handle});
-    # TODO: maybe not a good idea?
+    # TODO: should we do this?
     _free->call($self->{store}) if defined $self->{store};
   }
 }
