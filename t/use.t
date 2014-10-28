@@ -7,4 +7,4 @@ use testlib;
 use Test::More tests => 2;
 
 use_ok 'FFI::TinyCC';
-use_ok 'FFI::TinyCC::Parser';
+use_ok 'FFI::TinyCC::Inline';
