@@ -4,6 +4,8 @@ Carp
 FFI::Raw
 File::ShareDir
 File::chdir
+IPC::System::Simple
 Module::Build
+Path::Class
 Test::More
 autodie

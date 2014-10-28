@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw( Module::Build );
 use lib 'share';
-use DLL;  # share/DLL.pm
+use My::DLL;
 
 sub new
 {
