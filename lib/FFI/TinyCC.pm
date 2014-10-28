@@ -17,7 +17,35 @@ use Config;
 
 =head1 SYNOPSIS
 
+ use FFI::TinyCC;
+ use FFI::Raw;
+ 
+ my $tcc = FFI::TinyCC->new;
+ 
+ $tcc->compile_string(q{
+   int
+   find_square(int value)
+   {
+     return value*value;
+   }
+ });
+ 
+ my $find_square = $tcc->get_ffi_raw(
+   'find_square',
+   FFI::Raw::int,  # return type
+   FFI::Raw::int,  # argument types
+ );
+ 
+ # $find_square isa FFI::Raw
+ say $find_square->call(4); # says 16
+
 =head1 DESCRIPTION
+
+This module provides an interface to a very small C compiler known as
+TinyCC.  It does almost no optimizations, so C<gcc> or C<clang> will
+probably generate faster code, but it is very small and is very fast
+and thus may be useful for some Just In Time (JIT) or Foreign Function
+Interface (FFI) situations.
 
 =cut
 
