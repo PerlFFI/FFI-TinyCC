@@ -11,7 +11,6 @@ use Config;
 # TODO:
 #   2. add_library_path method
 #   3. add_library method
-#   4. add_symbol method
 
 # ABSTRACT: Tiny C Compiler for FFI
 # VERSION
@@ -289,6 +288,52 @@ sub compile_string
 {
   my($self, $code) = @_;
   my $r = _compile_string->call($self->{handle}, $code);
+  die FFI::TinyCC::Exception->new($self) if $r == -1;
+  $self;
+}
+
+=head3 add_symbol
+
+ $tcc->add_symbol($name, $callback);
+ $tcc->add_symbol($name, $pointer);
+
+Add the given given symbol name / callback or pointer combination.
+To call Perl from your C code, you can use L<FFI::Raw::Callback>,
+like so:
+
+ use FFI::Raw;
+ use FFI::TinyCC;
+ 
+ my $tcc = FFI::TinyCC->new;
+ # note that you want to make sure you keep
+ # the reference $callback around as a my
+ # or our var because you don't want the
+ # callback deallocated before it gets called
+ my $callback = FFI::Raw::Callback->new(
+   sub { "$_[0] x $_[1] " },
+   FFI::Raw::str,
+   FFI::Raw::int, FFI::Raw::int,
+ );
+ 
+ $tcc->add_symbol(dim => $callback);
+ 
+ $tcc->compile_string(q{
+   extern const char *dim(int arg);
+   int
+   main(int argc, char *argv[])
+   {
+     puts(arg(2,4));
+   }
+ });
+ 
+ $tcc->run; # prints "2 x 4"
+
+=cut
+
+sub add_symbol
+{
+  my($self, $name, $ptr) = @_;
+  my $r = _add_symbol->call($self->{handle}, $name, $ptr);
   die FFI::TinyCC::Exception->new($self) if $r == -1;
   $self;
 }

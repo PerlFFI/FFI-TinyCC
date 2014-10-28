@@ -42,6 +42,42 @@ Add a file, DLL, shared object or object file.
 
 Compile a string containing C source code.
 
+### add\_symbol
+
+    $tcc->add_symbol($name, $callback);
+    $tcc->add_symbol($name, $pointer);
+
+Add the given given symbol name / callback or pointer combination.
+To call Perl from your C code, you can use [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback),
+like so:
+
+    use FFI::Raw;
+    use FFI::TinyCC;
+    
+    my $tcc = FFI::TinyCC->new;
+    # note that you want to make sure you keep
+    # the reference $callback around as a my
+    # or our var because you don't want the
+    # callback deallocated before it gets called
+    my $callback = FFI::Raw::Callback->new(
+      sub { "$_[0] x $_[1] " },
+      FFI::Raw::str,
+      FFI::Raw::int, FFI::Raw::int,
+    );
+    
+    $tcc->add_symbol(dim => $callback);
+    
+    $tcc->compile_string(q{
+      extern const char *dim(int arg);
+      int
+      main(int argc, char *argv[])
+      {
+        puts(arg(2,4));
+      }
+    });
+    
+    $tcc->run; # prints "2 x 4"
+
 ## Preprocessor options
 
 ### add\_include\_path
