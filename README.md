@@ -144,6 +144,20 @@ Undefine the given symbol.
 
 Set the output type.  This must be called before any compilation.
 
+### add\_library
+
+    $tcc->add_library($libname);
+
+Add the given library when linking.  Example:
+
+    $tcc->add_library('m'); # equivalent to -lm (math library)
+
+### add\_library\_path
+
+    $tcc->add_library_path($pathname);
+
+Add the given directory to the search path used to find libraries.
+
 ### run
 
     my $exit_value = $tcc->run(@arguments);

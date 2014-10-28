@@ -8,10 +8,6 @@ use Carp qw( croak );
 use File::ShareDir ();
 use Config;
 
-# TODO:
-#   2. add_library_path method
-#   3. add_library method
-
 # ABSTRACT: Tiny C Compiler for FFI
 # VERSION
 
@@ -151,13 +147,13 @@ use constant _set_output_type => FFI::Raw->new(
 use constant _add_library_path => FFI::Raw->new(
   _lib, 'tcc_add_library_path',
   FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::int,
+  FFI::Raw::ptr, FFI::Raw::str,
 );
 
 use constant _add_library => FFI::Raw->new(
   _lib, 'tcc_add_library',
   FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::int,
+  FFI::Raw::ptr, FFI::Raw::str,
 );
 
 use constant _add_symbol => FFI::Raw->new(
@@ -457,6 +453,40 @@ sub set_output_type
   $self;
 }
 
+=head3 add_library
+
+ $tcc->add_library($libname);
+
+Add the given library when linking.  Example:
+
+ $tcc->add_library('m'); # equivalent to -lm (math library)
+
+=cut
+
+sub add_library
+{
+  my($self, $libname) = @_;
+  my $r = _add_library->call($self->{handle}, $libname);
+  die FFI::TinyCC::Exception->new($self) if $r == -1;
+  $self;
+}
+
+=head3 add_library_path
+
+ $tcc->add_library_path($pathname);
+
+Add the given directory to the search path used to find libraries.
+
+=cut
+
+sub add_library_path
+{
+  my($self, $pathname) = @_;
+  my $r = _add_library_path->call($self->{handle}, $pathname);
+  die FFI::TinyCC::Exception->new($self) if $r == -1;
+  $self;  
+}
+
 =head3 run
 
  my $exit_value = $tcc->run(@arguments);
@@ -474,8 +504,9 @@ sub run
   my $ptrs = pack 'P' x $argc, @c_strings;
   my $argv = unpack('L!', pack('P', $ptrs));
 
-  # TODO: does -1 mean an error?  
-  _run->call($self->{handle}, $argc, $argv);
+  my $r = _run->call($self->{handle}, $argc, $argv);
+  die FFI::TinyCC::Exception->new($self) if $r == -1;
+  $r;  
 }
 
 =head3 get_symbol
