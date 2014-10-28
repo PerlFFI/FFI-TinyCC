@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.02      2014-10-28 15:16:44 -0400
   - added tcc_eval and tcc_inline interfaces in FFI::TinyCC::Inline
 
 0.01      2014-10-28 09:29:55 -0400
