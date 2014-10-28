@@ -240,8 +240,6 @@ package
 use strict;
 use warnings;
 
-# VERSION
-
 # These regular expressions were derived from Regexp::Common v0.01.
 my $RE_comment_C   = q{(?:(?:\/\*)(?:(?:(?!\*\/)[\s\S])*)(?:\*\/))};
 my $RE_comment_Cpp = q{(?:\/\*(?:(?!\*\/)[\s\S])*\*\/|\/\/[^\n]*\n)};
