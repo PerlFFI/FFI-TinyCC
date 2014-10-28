@@ -1,3 +1,4 @@
 /FFI-TinyCC-*
 /.build
 /share/libtcc.*
+/share/lib/

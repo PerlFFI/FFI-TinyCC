@@ -64,6 +64,8 @@ Set compile options, as you would on the command line, for example:
 
 Add a file, DLL, shared object or object file.
 
+On windows adding a DLL is not supported via this interface.
+
 ### compile\_string
 
     $tcc->compile_string($c_code);

@@ -20,6 +20,7 @@ sub new
   my $self = $class->SUPER::new(%args);
 
   $self->add_to_cleanup('share/libtcc.*');
+  $self->add_to_cleanup('share/lib');
   
   $self;
 }

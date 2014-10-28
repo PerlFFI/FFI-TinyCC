@@ -232,6 +232,11 @@ sub new
   
   _set_error_func->call($self->{handle}, undef, $self->{error_cb});
   
+  if($^O eq 'MSWin32')
+  {
+    $self->add_library_path("N:/home/ollisg/dev/FFI-TinyCC/share/lib");
+  }
+  
   $self;
 }
 
@@ -289,6 +294,8 @@ sub set_options
  $tcc->add_file('foo.so'); # or dll on windows
 
 Add a file, DLL, shared object or object file.
+
+On windows adding a DLL is not supported via this interface.
 
 =cut
 

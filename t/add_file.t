@@ -82,6 +82,9 @@ subtest 'obj' => sub {
 
 subtest 'dll' => sub {
 
+  # TODO: on windows can we create a .a that points to
+  # the dll and use that to indirectly add the dll?
+  plan skip_all => 'unsupported on windows' if $^O eq 'MSWin32';
   plan tests => 2;
   
   local $CWD = tempdir( CLEANUP => 1 );
@@ -107,7 +110,6 @@ subtest 'dll' => sub {
     note "dll=$dll";
     eval { $tcc->output_file($dll) };
     is $@, '', 'tcc.output_file';
-  
   };
   
   subtest 'use' => sub {

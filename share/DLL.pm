@@ -11,7 +11,7 @@ use File::chdir;
 use File::Temp qw( tempdir );
 use File::Glob qw( bsd_glob );
 use Config;
-use File::Basename qw( dirname );
+use File::Basename qw( dirname basename );
 use base qw( Exporter );
 use File::Copy qw( copy );
 
@@ -24,12 +24,16 @@ sub tcc_clean
   local $CWD = $share;
   my @old = grep /libtcc\./, bsd_glob '*';
   unlink $_ for @old;
+  
+  unlink bsd_glob(File::Spec->catfile('lib', '*'));
+  rmdir 'lib' if -d 'lib';
 }
 
 sub tcc_build
 {
   if($^O eq 'MSWin32')
   {
+    tcc_clean();
     local $CWD = $share;
     copy(
       File::Spec->catfile(
@@ -37,7 +41,24 @@ sub tcc_build
         'libtcc.dll',
       ),
       'libtcc.dll',
-    ) || die "unable to copy $!";
+    ) || die "unable to copy libtcc.dll $!";
+
+    mkdir 'lib' unless -d 'lib';
+    
+    my @files = bsd_glob(
+      File::Spec->catfile(
+        Alien::TinyCC->libtcc_library_path,
+        'lib',
+        '*',
+      )
+    );
+
+    foreach my $file (@files)
+    {
+      my $from = $file;
+      my $to   = File::Spec->catfile('lib', basename $file);
+      copy($from => $to) || die "unable to copy $from => $to $!";
+    }
   }
   else
   {
