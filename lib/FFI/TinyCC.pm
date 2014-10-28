@@ -273,7 +273,7 @@ Methods will generally throw an exception on failure.
 
  $tcc->set_options($options);
 
-Set compile options, as you would on the command line, for example:
+Set compiler and linker options, as you would on the command line, for example:
 
  $tcc->set_options('-I/foo/include -L/foo/lib -DFOO=22');
 
@@ -329,35 +329,7 @@ sub compile_string
  $tcc->add_symbol($name, $pointer);
 
 Add the given given symbol name / callback or pointer combination.
-To call Perl from your C code, you can use L<FFI::Raw::Callback>,
-like so:
-
- use FFI::Raw;
- use FFI::TinyCC;
- 
- my $tcc = FFI::TinyCC->new;
- # note that you want to make sure you keep
- # the reference $callback around as a my
- # or our var because you don't want the
- # callback deallocated before it gets called
- my $callback = FFI::Raw::Callback->new(
-   sub { "$_[0] x $_[1] " },
-   FFI::Raw::str,
-   FFI::Raw::int, FFI::Raw::int,
- );
- 
- $tcc->add_symbol(dim => $callback);
- 
- $tcc->compile_string(q{
-   extern const char *dim(int arg);
-   int
-   main(int argc, char *argv[])
-   {
-     puts(arg(2,4));
-   }
- });
- 
- $tcc->run; # prints "2 x 4"
+See example below for how to use this to call Perl from Tiny C code.
 
 =cut
 
@@ -545,18 +517,6 @@ sub get_symbol
  my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
 
 Given the name of a function, return an L<FFI::Raw> instance that will allow you to call it from Perl.
-Example:
-
- my $tcc = FFI::Raw->new;
- 
- $tcc->compile_string(q{
-   int calculate_square(int value) {
-     return value*value;
-   }
- });
- 
- my $square = $tcc->get_ffi_raw('calculate_square');
- say $square->call(4); # prints 16
 
 =cut
 
@@ -564,6 +524,8 @@ sub get_ffi_raw
 {
   my($self, $symbol, @types) = @_;
   croak "you must at least specify a return type" unless @types > 0;
+  my $ptr = $self->get_symbol($symbol);
+  croak "$symbol not found" unless $ptr;
   FFI::Raw->new_from_ptr($self->get_symbol($symbol), @types);
 }
 
@@ -641,6 +603,20 @@ sub as_string
 }
 
 1;
+
+=head1 EXAMPLES
+
+=head2 Calling Tiny C code from Perl
+
+# EXAMPLE: example/hello.pl
+
+=head2 Calling Perl from Tiny C code
+
+# EXAMPLE: example/callback.pl
+
+=head2 Creating a FFI::Raw handle from a Tiny C function
+
+# EXAMPLE: example/ffi.pl
 
 =head1 SEE ALSO
 

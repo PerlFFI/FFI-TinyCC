@@ -52,7 +52,7 @@ Methods will generally throw an exception on failure.
 
     $tcc->set_options($options);
 
-Set compile options, as you would on the command line, for example:
+Set compiler and linker options, as you would on the command line, for example:
 
     $tcc->set_options('-I/foo/include -L/foo/lib -DFOO=22');
 
@@ -78,35 +78,7 @@ Compile a string containing C source code.
     $tcc->add_symbol($name, $pointer);
 
 Add the given given symbol name / callback or pointer combination.
-To call Perl from your C code, you can use [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback),
-like so:
-
-    use FFI::Raw;
-    use FFI::TinyCC;
-    
-    my $tcc = FFI::TinyCC->new;
-    # note that you want to make sure you keep
-    # the reference $callback around as a my
-    # or our var because you don't want the
-    # callback deallocated before it gets called
-    my $callback = FFI::Raw::Callback->new(
-      sub { "$_[0] x $_[1] " },
-      FFI::Raw::str,
-      FFI::Raw::int, FFI::Raw::int,
-    );
-    
-    $tcc->add_symbol(dim => $callback);
-    
-    $tcc->compile_string(q{
-      extern const char *dim(int arg);
-      int
-      main(int argc, char *argv[])
-      {
-        puts(arg(2,4));
-      }
-    });
-    
-    $tcc->run; # prints "2 x 4"
+See example below for how to use this to call Perl from Tiny C code.
 
 ## Preprocessor options
 
@@ -176,18 +148,6 @@ Return symbol value or undef if not found.  This can be passed into
     my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
 
 Given the name of a function, return an [FFI::Raw](https://metacpan.org/pod/FFI::Raw) instance that will allow you to call it from Perl.
-Example:
-
-    my $tcc = FFI::Raw->new;
-    
-    $tcc->compile_string(q{
-      int calculate_square(int value) {
-        return value*value;
-      }
-    });
-    
-    my $square = $tcc->get_ffi_raw('calculate_square');
-    say $square->call(4); # prints 16
 
 ### output\_file
 
@@ -196,6 +156,96 @@ Example:
 Output the generated code (either executable, object or DLL) to the given filename.
 The type of output is specified by the [set\_output\_type](https://metacpan.org/pod/FFI::TinyCC#set_output_type)
 method.
+
+# EXAMPLES
+
+## Calling Tiny C code from Perl
+
+    use strict;
+    use warnings;
+    use v5.10;
+    use FFI::TinyCC;
+    use FFI::Raw;
+    
+    my $tcc = FFI::TinyCC->new;
+    
+    $tcc->compile_string(<<EOF);
+    int
+    main(int argc, char *argv[])
+    {
+      puts("hello world");
+    }
+    EOF
+    
+    my $r = $tcc->run;
+    
+    exit $r;
+
+## Calling Perl from Tiny C code
+
+    use strict;
+    use warnings;
+    use v5.10;
+    use FFI::TinyCC;
+    use FFI::Raw;
+    
+    my $say = FFI::Raw::Callback->new(
+      sub { say $_[0] },
+      FFI::Raw::void,
+      FFI::Raw::str,
+    );
+    
+    my $tcc = FFI::TinyCC->new;
+    
+    $tcc->add_symbol(say => $say);
+    
+    $tcc->compile_string(q{
+    extern void say(const char *);
+    
+    int
+    main(int argc, char *argv[])
+    {
+      int i;
+      for(i=1; i<argc; i++)
+      {
+        say(argv[i]);
+      }
+    }
+    });
+    
+    # use '-' for the program name
+    my $r = $tcc->run('-', @ARGV);
+    
+    exit $r;
+
+## Creating a FFI::Raw handle from a Tiny C function
+
+    use strict;
+    use warnings;
+    use v5.10;
+    use FFI::TinyCC;
+    use FFI::Raw;
+    
+    my $tcc = FFI::TinyCC->new;
+    
+    $tcc->compile_string(q{
+      int
+      calculate_square(int value)
+      {
+        return value*value;
+      }
+    });
+    
+    my $value = (shift @ARGV) // 4;
+    
+    # $square isa FFI::Raw
+    my $square = $tcc->get_ffi_raw(
+      'calculate_square',
+      FFI::Raw::int,  # return type
+      FFI::Raw::int,  # argument types
+    );
+    
+    say $square->call($value);
 
 # SEE ALSO
 
