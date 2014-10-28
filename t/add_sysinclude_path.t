@@ -6,10 +6,11 @@ use lib $FindBin::Bin;
 use testlib;
 use Test::More tests => 3;
 use FFI::TinyCC;
+use Path::Class qw( file dir );
 
 my $tcc = FFI::TinyCC->new;
 
-my $inc = _catfile($FindBin::Bin, 'c');
+my $inc = file($FindBin::Bin, 'c');
 
 note "inc=$inc";
 

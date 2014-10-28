@@ -10,6 +10,7 @@ use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
 use FFI::Raw;
+use Path::Class qw( file dir );
 
 subtest exe => sub
 {
@@ -33,14 +34,14 @@ subtest exe => sub
   
   my $exe = "foo$Config{exe_ext}";
   
-  note "exe=" . _catfile($CWD, $exe);
+  note "exe=" . file($CWD, $exe);
   
   eval { $tcc->output_file($exe) };
   is $@, '', 'tcc.output_file';
   
   ok -f $exe, "created output file";
   
-  system _catfile($CWD, $exe), 'list', 'form';
+  system file($CWD, $exe), 'list', 'form';
   is $? >> 8, 42, 'return value 42';
 
 };
@@ -69,7 +70,7 @@ subtest obj => sub
     })};
     is $@, '', 'tcc.compile_string';
   
-    note "obj=" . _catfile($CWD, $obj);
+    note "obj=" . file($CWD, $obj);
   
     eval { $tcc->output_file($obj) };
     is $@, '', 'tcc.output_file';
@@ -110,7 +111,7 @@ subtest dll => sub {
 
   my $tcc = FFI::TinyCC->new;
   
-  my $dll = _catfile( $CWD, "bar." . FFI::TinyCC::_dlext() );
+  my $dll = file( $CWD, "bar." . FFI::TinyCC::_dlext() );
   
   eval { $tcc->set_output_type('dll') };
   is $@, '', 'tcc.set_output_type(dll)';

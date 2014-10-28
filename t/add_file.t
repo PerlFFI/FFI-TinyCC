@@ -9,6 +9,7 @@ use FFI::TinyCC;
 use FFI::Raw;
 use File::Temp qw( tempdir );
 use File::chdir;
+use Path::Class qw( file dir );
 use Config;
 
 subtest 'c source code' => sub {
@@ -16,7 +17,7 @@ subtest 'c source code' => sub {
 
   my $tcc = FFI::TinyCC->new;
   
-  my $file = _catfile($FindBin::Bin, 'c', 'return22.c');
+  my $file = file($FindBin::Bin, 'c', 'return22.c');
   note "file = $file";
   
   eval { $tcc->add_file($file) };
@@ -31,7 +32,7 @@ subtest 'obj' => sub {
   
   local $CWD = tempdir( CLEANUP => 1 );
   
-  my $obj = _catfile($CWD, "foo$Config{obj_ext}");
+  my $obj = file($CWD, "foo$Config{obj_ext}");
   
   subtest 'create' => sub {
     plan tests => 3;
@@ -90,7 +91,7 @@ subtest 'dll' => sub {
   
   local $CWD = tempdir( CLEANUP => 1 );
   
-  my $dll = _catfile( $CWD, "bar." . FFI::TinyCC::_dlext() );
+  my $dll = file( $CWD, "bar." . FFI::TinyCC::_dlext() );
 
   subtest 'create' => sub {
     plan tests => 3;

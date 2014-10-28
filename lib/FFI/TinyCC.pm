@@ -6,7 +6,6 @@ use v5.10;
 use FFI::Raw;
 use Carp qw( croak );
 use File::ShareDir ();
-use Config;
 
 # ABSTRACT: Tiny C Compiler for FFI
 # VERSION
@@ -45,23 +44,24 @@ Interface (FFI) situations.
 
 =cut
 
-# recent strawberry Perl sets dlext to 'xs.dll'
-use constant _dlext => $^O eq 'MSWin32' ? 'dll' : $Config{dlext};
+sub _dlext
+{
+  require Config;
+  # recent strawberry Perl sets dlext to 'xs.dll'
+  $^O eq 'MSWin32' ? 'dll' : $Config::Config{dlext};
+}
 
 use constant {
-  _lib => eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
-    require File::Spec;
-    require File::Basename;
-    File::Spec->rel2abs(
-      File::Spec->catfile(
-        File::Basename::dirname($INC{'FFI/TinyCC.pm'}),
-        File::Spec->updir,
-        File::Spec->updir,
-        'share',
-        'libtcc.' . _dlext,
-      ),
-    );
-  },
+  _lib => $ENV{FFI_TINYCC_LIBTCC_SO} // (eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
+    require Path::Class::File;
+    Path::Class::File
+      ->new($INC{'FFI/TinyCC.pm'})
+      ->dir
+      ->parent
+      ->parent
+      ->file('share', 'libtcc.' . _dlext)
+      ->stringify
+  }),
   
   # tcc_set_output_type
   _TCC_OUTPUT_MEMORY     => 0,

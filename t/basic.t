@@ -9,5 +9,6 @@ isa_ok $tcc, 'FFI::TinyCC';
 eval q{
   use YAML ();
   note YAML::Dump($tcc);
+  note FFI::TinyCC::_lib();
 };
 

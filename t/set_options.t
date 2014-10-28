@@ -6,8 +6,9 @@ use lib $FindBin::Bin;
 use testlib;
 use Test::More tests => 3;
 use FFI::TinyCC;
+use Path::Class qw( file dir );
 
-my $inc = _catdir($FindBin::Bin, 'c');
+my $inc = dir($FindBin::Bin, 'c');
 
 my $options = "-I$inc -L$inc -DFOO=22";
 

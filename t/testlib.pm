@@ -4,29 +4,16 @@ package
 use strict;
 use warnings;
 use v5.10;
-use File::Spec;
-use base qw( Exporter );
+use Config;
+use Path::Class qw( file dir );
 
-our @EXPORT = qw( _catfile _catdir );
+my $dlext = $^O eq 'MSWin32' ? 'dll' : $Config{dlext};
 
-sub _catfile
-{
-  my $path = File::Spec->catfile(@_);
-  if($^O eq 'MSWin32' && 0)
-  {
-    $path = Win32::GetShortPathName($path);
-  }
-  $path;
-}
-
-sub _catdir
-{
-  my $path = File::Spec->catdir(@_);
-  if($^O eq 'MSWin32' && 0)
-  {
-    $path = Win32::GetShortPathName($path);
-  }
-  $path;
-}
+$ENV{FFI_TINYCC_LIBTCC_SO} = file($INC{'testlib.pm'})
+  ->absolute
+  ->dir
+  ->parent
+  ->file('share', "libtcc.$dlext")
+  ->stringify;
 
 1;

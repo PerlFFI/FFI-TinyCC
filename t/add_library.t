@@ -10,9 +10,10 @@ use File::chdir;
 use File::Temp qw( tempdir );
 use Archive::Ar 2.02;
 use Config;
+use Path::Class qw( file dir );
 
-my $srcdir = _catdir($FindBin::Bin, 'c');
-my $libdir = _catdir(tempdir( CLEANUP => 1 ), 'lib');
+my $srcdir = dir($FindBin::Bin, 'c');
+my $libdir = dir(tempdir( CLEANUP => 1 ), 'lib');
 mkdir $libdir;
 my $opt = "-I$srcdir -L$libdir";
 
@@ -37,7 +38,7 @@ subtest 'create lib' => sub {
       eval { $tcc->set_options($opt) };
       is $@, '', "tcc.set_options($opt)";
 
-      my $cfile = _catfile($srcdir, "$name.c");
+      my $cfile = file($srcdir, "$name.c");
       
       eval { $tcc->set_output_type('obj') };
       is $@, '', 'tcc.set_output_type(obj)';
@@ -49,7 +50,7 @@ subtest 'create lib' => sub {
       eval { $tcc->output_file($obj) };
       is $@, '', "tcc.output_file($obj)";
     
-      my $r = $ar->add_files($obj);
+      my $r = $ar->add_files("$obj");
       is $r, $count++, "ar.add_files($obj)";
     
     };
@@ -57,8 +58,8 @@ subtest 'create lib' => sub {
   
   subtest "create libonetwothree.a" => sub {
     plan tests => 1;
-    my $filename = _catfile($libdir, 'libonetwothree.a');
-    my $r = $ar->write($filename);
+    my $filename = file($libdir, 'libonetwothree.a');
+    my $r = $ar->write("$filename");
     isnt $r, undef, "ar.write($filename)";
   };
 };
@@ -72,7 +73,7 @@ subtest 'use lib' => sub {
   eval { $tcc->set_options($opt) };
   is $@, '', "tcc.set_options($opt)";
 
-  my $main = _catfile($srcdir, 'main.c');
+  my $main = file($srcdir, 'main.c');
   eval { $tcc->add_file($main) };
   is $@, '', "tcc.add_file($main)";
 
