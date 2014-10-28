@@ -106,7 +106,7 @@ sub _generate_sub ($$$)
 
 =head1 OPTIONS
 
-You can specify tcc options using the scoped pragmata, like so:
+You can specify Tiny C options using the scoped pragmata, like so:
 
  use FFI::TinyCC::Inline options => "-I/foo/include -L/foo/lib -DFOO=1";
  
