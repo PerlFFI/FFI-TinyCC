@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 use v5.10;
+use FindBin ();
+use lib $FindBin::Bin;
+use testlib;
 use Test::More tests => 3;
 use FFI::TinyCC;
 use FFI::Raw;
-use FindBin ();
-use File::Spec;
 use File::Temp qw( tempdir );
 use File::chdir;
 use Config;
@@ -15,7 +16,7 @@ subtest 'c source code' => sub {
 
   my $tcc = FFI::TinyCC->new;
   
-  my $file = File::Spec->catfile($FindBin::Bin, 'c', 'return22.c');
+  my $file = _catfile($FindBin::Bin, 'c', 'return22.c');
   note "file = $file";
   
   eval { $tcc->add_file($file) };
@@ -30,7 +31,7 @@ subtest 'obj' => sub {
   
   local $CWD = tempdir( CLEANUP => 1 );
   
-  my $obj = File::Spec->catfile($CWD, "foo$Config{obj_ext}");
+  my $obj = _catfile($CWD, "foo$Config{obj_ext}");
   
   subtest 'create' => sub {
     plan tests => 3;
@@ -89,7 +90,7 @@ subtest 'dll' => sub {
   
   local $CWD = tempdir( CLEANUP => 1 );
   
-  my $dll = File::Spec->catfile( $CWD, "bar." . FFI::TinyCC::_dlext() );
+  my $dll = _catfile( $CWD, "bar." . FFI::TinyCC::_dlext() );
 
   subtest 'create' => sub {
     plan tests => 3;

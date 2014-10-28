@@ -1,16 +1,18 @@
 use strict;
 use warnings;
+use v5.10;
+use FindBin ();
+use lib $FindBin::Bin;
+use testlib;
 use Test::More tests => 2;
 use FFI::TinyCC;
-use FindBin ();
-use File::Spec;
 use File::chdir;
 use File::Temp qw( tempdir );
 use Archive::Ar 2.02;
 use Config;
 
-my $srcdir = File::Spec->catdir($FindBin::Bin, 'c');
-my $libdir = File::Spec->catdir(tempdir( CLEANUP => 1 ), 'lib');
+my $srcdir = _catdir($FindBin::Bin, 'c');
+my $libdir = _catdir(tempdir( CLEANUP => 1 ), 'lib');
 mkdir $libdir;
 my $opt = "-I$srcdir";
 
@@ -35,7 +37,7 @@ subtest 'create lib' => sub {
       eval { $tcc->set_options($opt) };
       is $@, '', "tcc.set_options($opt)";
 
-      my $cfile = File::Spec->catfile($srcdir, "$name.c");
+      my $cfile = _catfile($srcdir, "$name.c");
       
       eval { $tcc->set_output_type('obj') };
       is $@, '', 'tcc.set_output_type(obj)';
@@ -55,7 +57,7 @@ subtest 'create lib' => sub {
   
   subtest "create libonetwothree.a" => sub {
     plan tests => 1;
-    my $filename = File::Spec->catfile($libdir, 'libonetwothree.a');
+    my $filename = _catfile($libdir, 'libonetwothree.a');
     my $r = $ar->write($filename);
     isnt $r, undef, "ar.write($filename)";
   };
@@ -73,7 +75,7 @@ subtest 'use lib' => sub {
   eval { $tcc->add_library_path($libdir) };
   is $@, '', "tcc.add_library_path($libdir)";
 
-  my $main = File::Spec->catfile($srcdir, 'main.c');
+  my $main = _catfile($srcdir, 'main.c');
   eval { $tcc->add_file($main) };
   is $@, '', "tcc.add_file($main)";
 

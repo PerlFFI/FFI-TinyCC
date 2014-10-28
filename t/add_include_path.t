@@ -1,13 +1,15 @@
 use strict;
 use warnings;
+use v5.10;
+use FindBin;
+use lib $FindBin::Bin;
+use testlib;
 use Test::More tests => 3;
 use FFI::TinyCC;
-use FindBin;
-use File::Spec;
 
 my $tcc = FFI::TinyCC->new;
 
-my $inc = File::Spec->catfile($FindBin::Bin, 'c');
+my $inc = _catfile($FindBin::Bin, 'c');
 
 note "inc=$inc";
 

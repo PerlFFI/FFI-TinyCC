@@ -1,12 +1,14 @@
 use strict;
 use warnings;
 use v5.10;
+use FindBin ();
+use lib $FindBin::Bin;
+use testlib;
 use Test::More tests => 3;
 use FFI::TinyCC;
 use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
-use File::Spec;
 use FFI::Raw;
 
 subtest exe => sub
@@ -31,14 +33,14 @@ subtest exe => sub
   
   my $exe = "foo$Config{exe_ext}";
   
-  note "exe=" . File::Spec->catfile($CWD, $exe);
+  note "exe=" . _catfile($CWD, $exe);
   
   eval { $tcc->output_file($exe) };
   is $@, '', 'tcc.output_file';
   
   ok -f $exe, "created output file";
   
-  system File::Spec->catfile($CWD, $exe), 'list', 'form';
+  system _catfile($CWD, $exe), 'list', 'form';
   is $? >> 8, 42, 'return value 42';
 
 };
@@ -67,7 +69,7 @@ subtest obj => sub
     })};
     is $@, '', 'tcc.compile_string';
   
-    note "obj=" . File::Spec->catfile($CWD, $obj);
+    note "obj=" . _catfile($CWD, $obj);
   
     eval { $tcc->output_file($obj) };
     is $@, '', 'tcc.output_file';
@@ -108,7 +110,7 @@ subtest dll => sub {
 
   my $tcc = FFI::TinyCC->new;
   
-  my $dll = File::Spec->catfile( $CWD, "bar." . FFI::TinyCC::_dlext() );
+  my $dll = _catfile( $CWD, "bar." . FFI::TinyCC::_dlext() );
   
   eval { $tcc->set_output_type('dll') };
   is $@, '', 'tcc.set_output_type(dll)';
