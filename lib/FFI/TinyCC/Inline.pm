@@ -9,7 +9,7 @@ use FFI::Raw;
 use Carp qw( croak );
 use base qw( Exporter );
 
-our @EXPORT_OK = qw( tcc_inline );
+our @EXPORT_OK = qw( tcc_inline tcc_eval );
 our @EXPORT = @EXPORT_OK;
 
 # ABSTRACT: Embed Tiny C code in your Perl program
@@ -27,6 +27,16 @@ our @EXPORT = @EXPORT_OK;
  };
  
  say square(4); # prints 16
+
+ use FFI::TinyCC::Inline qw( tcc_eval );
+ 
+ # sets value to 6:
+ my $value = tcc_eval q{
+   int main(int a, int b, int c)
+   {
+     return a + b + c;
+   }
+ }, 1, 2, 3;
 
 =head1 DESCRIPTION
 
@@ -65,6 +75,35 @@ sub _typemap ($)
   croak "unknown type: $type";
 }
 
+sub _generate_sub ($$$)
+{
+  my($func_name, $func, $tcc) = @_;
+  my $sub;
+  
+  if(@{ $func->{arg_types} } == 2
+  && $func->{arg_types}->[0] eq 'int'
+  && $func->{arg_types}->[1] =~ /^(const |)char \*\*$/)
+  {
+    my $ffi = $tcc->get_ffi_raw($func_name, _typemap $func->{return_type}, FFI::Raw::int, FFI::Raw::ptr);
+    $sub = sub {
+      my $argc = scalar @_;
+      my @c_strings = map { "$_\0" } @_;
+      my $ptrs = pack 'P' x $argc, @c_strings;
+      my $argv = unpack 'L!', pack 'P', $ptrs;
+      $ffi->call($argc, $argv);
+    };
+  }
+  else
+  {
+    my @types = map { _typemap $_ } ($func->{return_type}, @{ $func->{arg_types} });
+    my $ffi = $tcc->get_ffi_raw($func_name, @types);
+    no strict 'refs';
+    $sub = sub { $ffi->call(@_) };
+  }
+  
+  $sub;
+}
+
 =head1 FUNCTIONS
 
 =head2 tcc_inline
@@ -72,8 +111,8 @@ sub _typemap ($)
  tcc_inline $c_code;
 
 Compile the given C code using Tiny C and inject any functions found into the
-current package.  An exception can happen if the code fails to compile, or if
-the L<FFI::TinyCC::Inline> does not recognize one of the argument or return
+current package.  An exception will be thrown if the code fails to compile, or if
+L<FFI::TinyCC::Inline> does not recognize one of the argument or return
 types.
 
  tcc_inline q{
@@ -113,33 +152,32 @@ sub tcc_inline ($)
   my $meta = FFI::TinyCC::Parser->extract_function_metadata($code);
   foreach my $func_name (keys %{ $meta->{functions} })
   {
-    my $func = $meta->{functions}->{$func_name};
-    my $sub;
-    
-    if(@{ $func->{arg_types} } == 2
-    && $func->{arg_types}->[0] eq 'int'
-    && $func->{arg_types}->[1] =~ /^(const |)char \*\*$/)
-    {
-      my $ffi = $tcc->get_ffi_raw($func_name, _typemap $func->{return_type}, FFI::Raw::int, FFI::Raw::ptr);
-      $sub = sub {
-        my $argc = scalar @_;
-        my @c_strings = map { "$_\0" } @_;
-        my $ptrs = pack 'P' x $argc, @c_strings;
-        my $argv = unpack 'L!', pack 'P', $ptrs;
-        $ffi->call($argc, $argv);
-      };
-    }
-    else
-    {
-      my @types = map { _typemap $_ } ($func->{return_type}, @{ $func->{arg_types} });
-      my $ffi = $tcc->get_ffi_raw($func_name, @types);
-      no strict 'refs';
-      $sub = sub { $ffi->call(@_) };
-    }
+    my $sub = _generate_sub($func_name, $meta->{functions}->{$func_name}, $tcc);
     no strict 'refs';
     *{join '::', $caller, $func_name} = $sub;
   }
   ();
+}
+
+=head2 tcc_eval
+
+ tcc_eval $c_code, @arguments;
+
+This compiles the C code and executes the C<main> function, passing in the given arguments.
+Returns the result.
+
+=cut
+
+sub tcc_eval ($;@)
+{
+  my($code, @args) = @_;
+  my $tcc = FFI::TinyCC->new;
+  $tcc->compile_string($code);
+  my $meta = FFI::TinyCC::Parser->extract_function_metadata($code);
+  my $func = $meta->{functions}->{main};
+  croak "no main function" unless defined $func;
+  my $sub = _generate_sub('main', $meta->{functions}->{main}, $tcc);
+  $sub->(@args);
 }
 
 1;
