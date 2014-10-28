@@ -34,6 +34,8 @@ probably generate faster code, but it is very small and is very fast
 and thus may be useful for some Just In Time (JIT) or Foreign Function
 Interface (FFI) situations.
 
+For a simpler, but less powerful interface see [FFI::TinyCC::Inline](https://metacpan.org/pod/FFI::TinyCC::Inline).
+
 # CONSTRUCTOR
 
 ## new
@@ -247,8 +249,23 @@ method.
     
     say $square->call($value);
 
+# BUNDLED SOFTWARE
+
+This package also comes with a parser that was shamelessly stolen from [XS::TCC](https://metacpan.org/pod/XS::TCC),
+itself borrowed which I strongly suspect was itself shamelessly "borrowed"
+from [Inline::C::Parser::RegExp](https://metacpan.org/pod/Inline::C::Parser::RegExp)
+
+The license details for the parser are:
+
+Copyright 2002 Brian Ingerson
+Copyright 2008, 2010-2012 Sisyphus
+Copyright 2013 Steffen Muellero
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
 # SEE ALSO
 
+- [FFI::TinyCC::Inline](https://metacpan.org/pod/FFI::TinyCC::Inline)
 - [Tiny C](http://bellard.org/tcc/)
 - [Tiny C Compiler Reference Documentation](http://bellard.org/tcc/tcc-doc.html)
 - [FFI::Raw](https://metacpan.org/pod/FFI::Raw)

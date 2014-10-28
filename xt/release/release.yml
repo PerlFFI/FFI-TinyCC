@@ -8,6 +8,9 @@ pod_spelling_system:
     - DLL
     - Preprocessor
     - JIT
+    - Ingerson
+    - Muellero
+    - Steffen
 
 pod_coverage:
   skip: 0
@@ -15,6 +18,7 @@ pod_coverage:
   # for either Class or method.
   private:
     - auto::.*
+    - FFI::TinyCC::Parser
 
 unused_vars:
   skip: 0
