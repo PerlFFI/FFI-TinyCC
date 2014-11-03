@@ -42,7 +42,23 @@ subtest exe => sub
   ok -f $exe, "created output file";
   
   system file($CWD, $exe), 'list', 'form';
-  is $? >> 8, 42, 'return value 42';
+  my $ret = $?;
+  is $ret >> 8, 42, 'return value 42';
+  unless($ret >> 8 == 42)
+  {
+    if($ret == -1)
+    {
+      diag "failed to execute: $!";
+    }
+    elsif($ret & 127)
+    {
+      diag "child died with siganl " . ($ret&127)
+    }
+    else
+    {
+      diag "child exited with value = " . ($ret>>8);
+    }
+  }
 
 };
 
