@@ -2,7 +2,7 @@ package FFI::TinyCC;
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010;
 use FFI::Raw;
 use Carp qw( croak );
 use File::ShareDir ();

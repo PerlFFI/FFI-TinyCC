@@ -2,7 +2,7 @@ package My::DLL;
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010;
 use autodie qw( :all );  # need IPC::System::Simple
 use Alien::TinyCC;
 use Archive::Ar 2.02;

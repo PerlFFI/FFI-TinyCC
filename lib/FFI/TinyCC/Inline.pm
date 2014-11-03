@@ -2,7 +2,7 @@ package FFI::TinyCC::Inline;
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010;
 use FFI::TinyCC;
 use FFI::Raw;
 use Carp qw( croak );
