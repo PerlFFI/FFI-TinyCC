@@ -4,6 +4,7 @@ use 5.010;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib;
+use if $^O eq 'MSWin32', 'Test::More', skip_all => 'unsupported on windows';
 use Test::More tests => 1;
 use FFI::TinyCC;
 use FFI::Raw;
