@@ -2,3 +2,4 @@
 /.build
 /share/libtcc.*
 /share/lib/
+/share/build.log

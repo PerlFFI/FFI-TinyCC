@@ -21,6 +21,7 @@ sub new
 
   $self->add_to_cleanup('share/libtcc.*');
   $self->add_to_cleanup('share/lib');
+  $self->add_to_cleanup('share/build.log');
   
   $self;
 }

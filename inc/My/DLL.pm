@@ -24,12 +24,24 @@ my $share = Path::Class::File
   ->parent
   ->subdir('share');
 
+my $log = $share->file('build.log')->opena;
+
 sub tcc_clean
 {
-  unlink $_ for grep { $_->basename =~ /^libtcc\./ } $share->children;
+  say $log "=== clean ", time, '===';
+  for(grep { $_->basename =~ /^libtcc\./ } $share->children)
+  {
+    say $log "unlink $_";
+    unlink $_;
+  }
   if(-d $share->subdir('lib'))
   {
-    unlink $_ for $share->subdir('lib')->children;
+    for($share->subdir('lib')->children)
+    {
+      say $log "unlink $_";
+      unlink $_;
+    }
+    say $log "rmdir " . $share->subdir('lib');
     rmdir $share->subdir('lib');
   }
 }
@@ -37,6 +49,8 @@ sub tcc_clean
 sub tcc_build
 {
   tcc_clean();
+  
+  say $log "=== build ", time, '===';
 
   my $libdir = Path::Class::Dir->new(
     Alien::TinyCC->libtcc_library_path,
@@ -47,6 +61,7 @@ sub tcc_build
     do {
       my $from = $libdir->file('libtcc.dll');
       my $to   = $share->file('libtcc.dll');
+      say $log "copy $from => $to";
       copy($from => $to)
       || die "unable to copy $from => $to $!";
     };
@@ -57,6 +72,7 @@ sub tcc_build
     {
       my $from = $file;
       my $to   = $share->file('lib', basename $file);
+      say $log "copy $from $to";
       copy($from => $to)
       || die "unable to copy $from => $to $!";
     }
@@ -64,10 +80,12 @@ sub tcc_build
   else
   {
     my $lib = $libdir->file('libtcc.a');
+    say $log "lib = $lib";
 
     die "unable to find libtcc.a" unless -f $lib;
 
     my $tmp = Path::Class::Dir->new(tempdir( CLEANUP => 1 ));
+    say $log "tmp = $tmp";
 
     do {
       local $CWD = $tmp;
@@ -76,11 +94,14 @@ sub tcc_build
       $ar->extract;
     };
     my @obj = grep /\.(o|obj)$/, $tmp->children;
+    say $log "obj = $_" for @obj;
 
     my @cmd = ($Config{cc}, '-o' => $share->file("libtcc.$Config{dlext}"), '-shared', @obj);
+    say $log "+ @cmd\n";
 
-    print "% @cmd\n";
+    print "+ @cmd\n";
     system @cmd;
+    die if $?;
   }
 }
 
