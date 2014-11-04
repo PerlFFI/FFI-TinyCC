@@ -28,7 +28,7 @@ my $log = $share->file('build.log')->opena;
 
 sub tcc_clean
 {
-  say $log "=== clean ", time, '===';
+  say $log "--- clean ", time, '---';
   for(grep { $_->basename =~ /^libtcc\./ } $share->children)
   {
     say $log "unlink $_";
@@ -50,7 +50,7 @@ sub tcc_build
 {
   tcc_clean();
   
-  say $log "=== build ", time, '===';
+  say $log "--- build ", time, '---';
 
   my $libdir = Path::Class::Dir->new(
     Alien::TinyCC->libtcc_library_path,
