@@ -9,13 +9,8 @@ use My::DLL;
 sub new
 {
   my($class, %args) = @_;
-  
-  eval { tcc_build() };
-  if($@) 
-  {
-    warn $@;
-    exit;
-  }
+
+  tcc_build();
   
   my $self = $class->SUPER::new(%args);
 

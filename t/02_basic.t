@@ -4,14 +4,20 @@ use 5.010;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib;
+use FFI::TinyCC;
 use Test::More tests => 1;
-use File::ShareDir qw( dist_dir );
-use Path::Class qw( dir );
+use Path::Class qw( file );
 
-my $ok = subtest 'use all' => sub {
-  plan tests => 2;
-  use_ok 'FFI::TinyCC';
-  use_ok 'FFI::TinyCC::Inline';
+my $ok = subtest 'basic' => sub {
+  my $tcc = FFI::TinyCC->new;
+  isa_ok $tcc, 'FFI::TinyCC';
+  
+  my $file =  file($FindBin::Bin, 'c', 'return22.c');
+  
+  eval { $tcc->add_file($file) };
+  is $@, '', 'tcc.compile_string';
+  
+  is $tcc->run, 22, 'tcc.run';
 };
 
 unless($ok)
