@@ -422,6 +422,11 @@ sub undefine_symbol
 
 Set the output type.  This must be called before any compilation.
 
+Output formats may not be supported on your platform.  C<exe> is
+NOT supported on *BSD or OS X.
+
+As a basic baseline at least C<memory> should be supported.
+
 =cut
 
 my %output_type = (

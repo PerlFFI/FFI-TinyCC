@@ -4,6 +4,7 @@ use 5.010;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib;
+use if $^O =~ /bsd$/i, 'Test::More', skip_all => "unsupported on $^O";
 use Test::More tests => 1;
 use FFI::TinyCC;
 use Config;
