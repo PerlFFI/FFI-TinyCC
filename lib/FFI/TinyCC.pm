@@ -236,7 +236,7 @@ sub new
   
   if($^O eq 'MSWin32')
   {
-    $self->add_library_path("N:/home/ollisg/dev/FFI-TinyCC/share/lib");
+    $self->add_library_path("N:/borked");
   }
   
   $self->{no_free_store} = 1 if $opt{_no_free_store};
