@@ -236,7 +236,10 @@ sub new
   
   if($^O eq 'MSWin32')
   {
-    $self->add_library_path("N:/borked");
+    require File::Basename;
+    require File::Spec;
+    my $path = File::Spec->catdir(File::Basename::dirname(_lib), 'lib');
+    $self->add_library_path($path);
   }
   
   $self->{no_free_store} = 1 if $opt{_no_free_store};

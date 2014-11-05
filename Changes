@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - fixed Windows breakage due to hard coded path (doh!)
 
 0.04      2014-11-04 16:58:12 -0500
   - better test diagnostics
