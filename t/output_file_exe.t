@@ -4,14 +4,16 @@ use 5.010;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib;
-use if $^O =~ /bsd$/i, 'Test::More', skip_all => "unsupported on $^O";
-use Test::More tests => 1;
+use Test::More;
 use FFI::TinyCC;
 use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
 use FFI::Raw;
 use Path::Class qw( file dir );
+
+plan skip_all => "unsupported on $^O" if $^O =~ /bsd$/i;
+plan tests => 1;
 
 subtest exe => sub
 {
