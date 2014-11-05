@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.05      2014-11-05 07:22:26 -0500
   - fixed Windows breakage due to hard coded path (doh!)
 
 0.04      2014-11-04 16:58:12 -0500
