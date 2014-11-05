@@ -120,6 +120,11 @@ Undefine the given symbol.
 
 Set the output type.  This must be called before any compilation.
 
+Output formats may not be supported on your platform.  `exe` is
+NOT supported on \*BSD or OS X.
+
+As a basic baseline at least `memory` should be supported.
+
 ### add\_library
 
     $tcc->add_library($libname);
@@ -249,19 +254,13 @@ method.
     
     say $square->call($value);
 
-# BUNDLED SOFTWARE
+# CAVEATS
 
-This package also comes with a parser that was shamelessly stolen from [XS::TCC](https://metacpan.org/pod/XS::TCC),
-itself borrowed which I strongly suspect was itself shamelessly "borrowed"
-from [Inline::C::Parser::RegExp](https://metacpan.org/pod/Inline::C::Parser::RegExp)
+Tiny C is only supported on platforms with ARM or Intel processors.  All features may not be fully supported on
+all operating systems.
 
-The license details for the parser are:
-
-Copyright 2002 Brian Ingerson
-Copyright 2008, 2010-2012 Sisyphus
-Copyright 2013 Steffen Muellero
-
-This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+Tiny C is no longer supported by its original author, though various forks seem to have varying levels of support.
+We use the fork that comes with [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC).
 
 # SEE ALSO
 
@@ -270,6 +269,20 @@ This program is free software; you can redistribute it and/or modify it under th
 - [Tiny C Compiler Reference Documentation](http://bellard.org/tcc/tcc-doc.html)
 - [FFI::Raw](https://metacpan.org/pod/FFI::Raw)
 - [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC)
+
+# BUNDLED SOFTWARE
+
+This package also comes with a parser that was shamelessly stolen from [XS::TCC](https://metacpan.org/pod/XS::TCC),
+which I strongly suspect was itself shamelessly "borrowed" from 
+[Inline::C::Parser::RegExp](https://metacpan.org/pod/Inline::C::Parser::RegExp)
+
+The license details for the parser are:
+
+Copyright 2002 Brian Ingerson
+Copyright 2008, 2010-2012 Sisyphus
+Copyright 2013 Steffen Muellero
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 # AUTHOR
 
