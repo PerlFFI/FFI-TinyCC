@@ -402,4 +402,19 @@ RESYNC:  # Skip the rest of the current line, and continue.
 
 =back
 
+=head1 BUNDLED SOFTWARE
+
+This package also comes with a parser that was shamelessly stolen from L<XS::TCC>,
+which I strongly suspect was itself shamelessly "borrowed" from 
+L<Inline::C::Parser::RegExp>
+
+The license details for the parser are:
+
+Copyright 2002 Brian Ingerson
+Copyright 2008, 2010-2012 Sisyphus
+Copyright 2013 Steffen Muellero
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
 =cut
+
