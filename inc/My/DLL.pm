@@ -91,7 +91,14 @@ sub tcc_build
       local $CWD = $tmp;
       my $ar = Archive::Ar->new;
       $ar->read($lib->stringify);
-      $ar->extract;
+      foreach my $old ($ar->list_files)
+      {
+        my $new = $old;
+        $new =~ s{\0+$}{};
+        next if $new eq $old;
+        $ar->rename($old, $new);
+      }
+      $ar->extract || die $ar->error;
     };
     my @obj = grep /\.(o|obj)$/, $tmp->children;
     say $log "obj = $_" for @obj;
