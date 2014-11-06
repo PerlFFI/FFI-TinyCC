@@ -4,14 +4,16 @@ use 5.010;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib;
-use if $^O eq 'MSWin32', 'Test::More', skip_all => 'unsupported on windows';
-use Test::More tests => 1;
+use Test::More;
 use FFI::TinyCC;
 use FFI::Raw;
 use File::Temp qw( tempdir );
 use File::chdir;
 use Path::Class qw( file dir );
 use Config;
+
+plan skip_all => "unsupported on $^O" if $^O =~ /^(darwin|MSWin32)$/;
+plan tests => 1;
 
 subtest 'dll' => sub {
 
