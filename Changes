@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.08      2014-11-09 07:47:07 -0500
   - add Debian kFreeBSD support (skip some unsupported tests)
 
 0.07      2014-11-05 20:53:30 -0500
