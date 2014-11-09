@@ -12,7 +12,7 @@ use File::chdir;
 use FFI::Raw;
 use Path::Class qw( file dir );
 
-plan skip_all => "unsupported on $^O" if $^O =~ /^(darwin)$/;
+plan skip_all => "unsupported on $^O" if $^O =~ /^(darwin|gnukfreebsd)$/;
 plan tests => 1;
 
 subtest dll => sub {
