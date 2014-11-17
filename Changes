@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Skip unsupported tests on arm linux
 
 0.08      2014-11-09 07:47:07 -0500
   - add Debian kFreeBSD support (skip some unsupported tests)

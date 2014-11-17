@@ -13,6 +13,7 @@ use FFI::Raw;
 use Path::Class qw( file dir );
 
 plan skip_all => "unsupported on $^O" if $^O =~ /^(darwin|gnukfreebsd)$/;
+plan skip_all => "unsupported on $^O $Config{archname}" if $^O eq 'linux' && $Config{archname} =~ /^arm/;
 plan tests => 1;
 
 subtest dll => sub {

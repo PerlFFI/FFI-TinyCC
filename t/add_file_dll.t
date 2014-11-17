@@ -13,6 +13,7 @@ use Path::Class qw( file dir );
 use Config;
 
 plan skip_all => "unsupported on $^O" if $^O =~ /^(darwin|MSWin32|gnukfreebsd)$/;
+plan skip_all => "unsupported on $^O $Config{archname}" if $^O eq 'linux' && $Config{archname} =~ /^arm/;
 plan tests => 1;
 
 subtest 'dll' => sub {
