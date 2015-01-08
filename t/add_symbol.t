@@ -28,7 +28,7 @@ bar()
 })};
 is $@, '', 'tcc.compile_string';
 
-my $ffi = eval { $tcc->get_ffi_raw('bar', FFI::Raw::int) };
-is $@, '', 'tcc.get_ffi_raw';
+my $ffi = eval { FFI::Raw->new_from_ptr($tcc->get_symbol('bar'), FFI::Raw::int) };
+is $@, '', 'FFI::Raw.new_from_ptr';
 
 is $ffi->call, (3+3)*2, 'ffi.call';

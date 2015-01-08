@@ -59,8 +59,8 @@ subtest 'obj' => sub {
     })};
     is $@, '', 'tcc.compile_string';
   
-    my $ffi = eval { $tcc->get_ffi_raw('wrapper', FFI::Raw::str) };
-    is $@, '', 'tcc.get_ffi_raw';
+    my $ffi = eval { FFI::Raw->new_from_ptr($tcc->get_symbol('wrapper'), FFI::Raw::str) };
+    is $@, '', 'FFI::Raw.new_from_ptr';
     
     is $ffi->call, "rabbit", 'ffi.call';
   

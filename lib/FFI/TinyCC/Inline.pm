@@ -83,7 +83,13 @@ sub _generate_sub ($$$)
   && $func->{arg_types}->[0] eq 'int'
   && $func->{arg_types}->[1] =~ /^(const |)char \*\*$/)
   {
-    my $ffi = $tcc->get_ffi_raw($func_name, _typemap $func->{return_type}, FFI::Raw::int, FFI::Raw::ptr);
+    my $ffi = do {
+      local $FFI::TinyCC::_get_ffi_raw_deprecation = 0;
+      $tcc->get_ffi_raw($func_name, 
+        _typemap $func->{return_type}, # return type
+         FFI::Raw::int, FFI::Raw::ptr, # argument types
+       );
+    };
     $sub = sub {
       my $argc = scalar @_;
       my @c_strings = map { "$_\0" } @_;
@@ -95,7 +101,10 @@ sub _generate_sub ($$$)
   else
   {
     my @types = map { _typemap $_ } ($func->{return_type}, @{ $func->{arg_types} });
-    my $ffi = $tcc->get_ffi_raw($func_name, @types);
+    my $ffi = do {
+      local $FFI::TinyCC::_get_ffi_raw_deprecation = 0;
+      $tcc->get_ffi_raw($func_name, @types);
+    };
     no strict 'refs';
     $sub = sub { $ffi->call(@_) };
   }

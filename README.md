@@ -17,8 +17,8 @@ Tiny C Compiler for FFI
       }
     });
     
-    my $find_square = $tcc->get_ffi_raw(
-      'find_square',
+    my $find_square = FFI::Raw->new_from_ptr(
+      $tcc->get_symbol('find_square'),
       FFI::Raw::int,  # return type
       FFI::Raw::int,  # argument types
     );
@@ -152,9 +152,26 @@ Return symbol value or undef if not found.  This can be passed into
 
 ### get\_ffi\_raw
 
+**DEPRECATED**
+
     my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
 
 Given the name of a function, return an [FFI::Raw](https://metacpan.org/pod/FFI::Raw) instance that will allow you to call it from Perl.
+
+This method is deprecated, and will be removed from a future version of
+[FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC).  It will issue a warning if you try to use it.  Instead
+of this:
+
+    my $function = $ffi->get_ffi_raw($name, $ret, @args);
+
+Do this:
+
+    use FFI::Raw;
+    my $function = FFI::Raw->new_from_ptr($ffi->get_symbol($name), $ret, @args);
+
+Also, [FFI::Raw](https://metacpan.org/pod/FFI::Raw) will be replaced as a prerequisite in an upcoming version
+of [FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC), so make sure that you `use FFI::Raw` if you are using
+it.
 
 ### output\_file
 

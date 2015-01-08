@@ -1,6 +1,11 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - get_ffi_raw method is deprecated and will issue a warning
+    use FFI::Raw->new_from_ptr instead
+  - FFI::Raw will be removed as a prerequisite in the near future
+    if you are using both FFI::Raw and FFI::TinyCC then you need
+    to explicitly declare BOTH as prerequisites.
 
 0.09      2014-11-17 06:31:51 -0500
   - Skip unsupported tests on arm linux
