@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.10      2015-01-08 10:09:47 -0500
   - get_ffi_raw method is deprecated and will issue a warning
     use FFI::Raw->new_from_ptr instead
   - FFI::Raw will be removed as a prerequisite in the near future
