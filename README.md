@@ -78,6 +78,19 @@ Compile a string containing C source code.
 Add the given given symbol name / callback or pointer combination.
 See example below for how to use this to call Perl from Tiny C code.
 
+It will accept a [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback) at a performance penalty.
+If possible pass in the pointer to the C entry point instead.
+
+If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus::Memory#cast](https://metacpan.org/pod/FFI::Platypus::Memory#cast)
+to get a pointer to a closure:
+
+    use FFI::Platypus::Declare;
+    use FFI::Platypus::Memory qw( cast );
+    my $clousre = closure { return $_[0]+1 };
+    my $pointer = cast '(int)->int' => 'opaque', $closure;
+    
+    $tcc->add_symbol('foo' => $pointer);
+
 ## Preprocessor options
 
 ### add\_include\_path
@@ -239,7 +252,7 @@ method.
     
     exit $r;
 
-## Creating a FFI::Raw handle from a Tiny C function
+## Attaching as a FFI::Platypus function from a Tiny C function
 
     use FFI::TinyCC;
     use FFI::Platypus::Declare qw( int );
@@ -276,7 +289,7 @@ We use the fork that comes with [Alien::TinyCC](https://metacpan.org/pod/Alien::
 - [FFI::TinyCC::Inline](https://metacpan.org/pod/FFI::TinyCC::Inline)
 - [Tiny C](http://bellard.org/tcc/)
 - [Tiny C Compiler Reference Documentation](http://bellard.org/tcc/tcc-doc.html)
-- [FFI::Raw](https://metacpan.org/pod/FFI::Raw)
+- [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus)
 - [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC)
 
 # BUNDLED SOFTWARE

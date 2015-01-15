@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use FFI::Platypus;
 use FFI::Platypus::Memory qw( malloc free );
-use FFI::Raw;
 use Carp qw( croak carp );
 use File::ShareDir ();
 
@@ -100,6 +99,10 @@ $ffi->type('(opaque,string)->void' => 'error_handler_t');
 $ffi->attach([tcc_new             => '_new']             => []                                     => 'tcc_t');
 $ffi->attach([tcc_delete          => '_delete']          => ['tcc_t']                              => 'void');
 $ffi->attach([tcc_set_error_func  => '_set_error_func']  => ['tcc_t', 'opaque', 'error_handler_t'] => 'void');
+$ffi->attach([tcc_add_symbol      => '_add_symbol']      => ['tcc_t', 'string', 'opaque']          => 'int');
+$ffi->attach([tcc_get_symbol      => '_get_symbol']      => ['tcc_t', 'string']                    => 'opaque');
+$ffi->attach([tcc_relocate        => '_relocate']        => ['tcc_t', 'opaque']                    => 'int');
+$ffi->attach([tcc_run             => '_run']             => ['tcc_t', 'int', 'opaque']             => 'int');
 
 sub _method ($;@)
 {
@@ -115,30 +118,6 @@ sub _method ($;@)
   };
   die $@ if $@;
 }
-
-use constant _add_symbol => FFI::Raw->new(
-  _lib, 'tcc_add_symbol',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str, FFI::Raw::ptr,
-);
-
-use constant _run => FFI::Raw->new(
-  _lib, 'tcc_run',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::int, FFI::Raw::ptr,
-);
-
-use constant _relocate => FFI::Raw->new(
-  _lib, 'tcc_relocate',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::ptr,
-);
-
-use constant _get_symbol => FFI::Raw->new(
-  _lib, 'tcc_get_symbol',
-  FFI::Raw::ptr,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
 
 =head1 CONSTRUCTOR
 
@@ -255,12 +234,39 @@ _method compile_string => qw( string );
 Add the given given symbol name / callback or pointer combination.
 See example below for how to use this to call Perl from Tiny C code.
 
+It will accept a L<FFI::Raw::Callback> at a performance penalty.
+If possible pass in the pointer to the C entry point instead.
+
+If you are using L<FFI::Platypus> you can use L<FFI::Platypus::Memory#cast>
+to get a pointer to a closure:
+
+ use FFI::Platypus::Declare;
+ use FFI::Platypus::Memory qw( cast );
+ my $clousre = closure { return $_[0]+1 };
+ my $pointer = cast '(int)->int' => 'opaque', $closure;
+ 
+ $tcc->add_symbol('foo' => $pointer);
+
 =cut
 
 sub add_symbol
 {
   my($self, $name, $ptr) = @_;
-  my $r = _add_symbol->call($self->{handle}, $name, $ptr);
+  my $r;
+  if(ref($ptr) && eval { $ptr->isa('FFI::Raw::Callback') })
+  {
+    require FFI::Raw;
+    my($lib) = $ffi->lib;
+    my $add_symbol = FFI::Raw->new($lib, 'tcc_add_symbol',
+      FFI::Raw::int(),
+      FFI::Raw::ptr(), FFI::Raw::str(), FFI::Raw::ptr(),
+    );
+    $r = $add_symbol->call($self->{handle}, $name, $ptr);
+  }
+  else
+  {
+    $r = _add_symbol($self, $name, $ptr);
+  }
   die FFI::TinyCC::Exception->new($self) if $r == -1;
   $self;
 }
@@ -377,7 +383,7 @@ sub run
   my $ptrs = pack 'P' x $argc, @c_strings;
   my $argv = unpack('L!', pack('P', $ptrs));
 
-  my $r = _run->call($self->{handle}, $argc, $argv);
+  my $r = _run($self, $argc, $argv);
   die FFI::TinyCC::Exception->new($self) if $r == -1;
   $r;  
 }
@@ -399,13 +405,13 @@ sub get_symbol
   
   unless($self->{relocate})
   {
-    my $size = _relocate->call($self->{handle}, undef);
+    my $size = _relocate($self, undef);
     $self->{store} = malloc($size);
-    my $r = _relocate->call($self->{handle}, $self->{store});
+    my $r = _relocate($self, $self->{store});
     FFI::TinyCC::Exception->new($self) if $r == -1;
     $self->{relocate} = 1;
   }
-  _get_symbol->call($self->{handle}, $symbol_name);
+  _get_symbol($self, $symbol_name);
 }
 
 =head3 get_ffi_raw
@@ -527,7 +533,7 @@ sub as_string
 
 # EXAMPLE: example/callback.pl
 
-=head2 Creating a FFI::Raw handle from a Tiny C function
+=head2 Attaching as a FFI::Platypus function from a Tiny C function
 
 # EXAMPLE: example/ffi_platypus.pl
 
@@ -549,7 +555,7 @@ We use the fork that comes with L<Alien::TinyCC>.
 
 =item L<Tiny C Compiler Reference Documentation|http://bellard.org/tcc/tcc-doc.html>
 
-=item L<FFI::Raw>
+=item L<FFI::Platypus>
 
 =item L<Alien::TinyCC>
 
