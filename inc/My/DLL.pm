@@ -25,24 +25,22 @@ my $share = Path::Class::File
 
 my $log = $share->file('build.log')->opena;
 
-sub say { print @_, "\n" }
-
 sub tcc_clean
 {
-  say $log "--- clean ", time, '---', "\n";
+  print $log "--- clean ", time, '---', "\n";
   for(grep { $_->basename =~ /^libtcc\./ } $share->children)
   {
-    say $log "unlink $_";
+    print $log "unlink $_", "\n";
     unlink $_;
   }
   if(-d $share->subdir('lib'))
   {
     for($share->subdir('lib')->children)
     {
-      say $log "unlink $_";
+      print $log "unlink $_", "\n";
       unlink $_;
     }
-    say $log "rmdir " . $share->subdir('lib');
+    print $log "rmdir " . $share->subdir('lib'), "\n";
     rmdir $share->subdir('lib');
   }
 }
@@ -51,7 +49,7 @@ sub tcc_build
 {
   tcc_clean();
   
-  say $log "--- build ", time, '---';
+  print $log "--- build ", time, '---', "\n";
 
   my $libdir = Path::Class::Dir->new(
     Alien::TinyCC->libtcc_library_path,
@@ -62,7 +60,7 @@ sub tcc_build
     do {
       my $from = $libdir->file('libtcc.dll');
       my $to   = $share->file('libtcc.dll');
-      say $log "copy $from => $to";
+      print $log "copy $from => $to", "\n";
       copy($from => $to)
       || die "unable to copy $from => $to $!";
     };
@@ -73,7 +71,7 @@ sub tcc_build
     {
       my $from = $file;
       my $to   = $share->file('lib', basename $file);
-      say $log "copy $from $to";
+      print $log "copy $from $to", "\n";
       copy($from => $to)
       || die "unable to copy $from => $to $!";
     }
@@ -81,12 +79,12 @@ sub tcc_build
   else
   {
     my $lib = $libdir->file('libtcc.a');
-    say $log "lib = $lib";
+    print $log "lib = $lib", "\n";
 
     die "unable to find libtcc.a" unless -f $lib;
 
     my $tmp = Path::Class::Dir->new(tempdir( CLEANUP => 1 ));
-    say $log "tmp = $tmp";
+    print $log "tmp = $tmp", "\n";
 
     do {
       local $CWD = $tmp;
@@ -102,10 +100,10 @@ sub tcc_build
       $ar->extract || die $ar->error;
     };
     my @obj = grep /\.(o|obj)$/, $tmp->children;
-    say $log "obj = $_" for @obj;
+    print $log "obj = $_", "\n" for @obj;
 
     my @cmd = ($Config{cc}, '-o' => $share->file("libtcc.$Config{dlext}"), '-shared', @obj);
-    say $log "+ @cmd\n";
+    print $log "+ @cmd\n";
 
     print "+ @cmd\n";
     system @cmd;
