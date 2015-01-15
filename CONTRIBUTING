@@ -7,13 +7,14 @@ what to do and can skip reading this.
 
 You will need to install these CPAN dists to work on this dist:
 
- . perl 5.10 or better (required for FFI::Raw)
+ . perl 5.8.1 or better (required for FFI::Platypus)
  . autodie
  . Alien::TinyCC
  . Archive::Ar 2.02 or better
  . File::chdir
  . Path::Class
  . IPC::System::Simple
+ . FFI::Platypus
 
 (sorry there is no cpanfile)
 

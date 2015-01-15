@@ -8,7 +8,6 @@ use FFI::TinyCC;
 use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
-use FFI::Raw;
 use Path::Class qw( file dir );
 
 subtest obj => sub

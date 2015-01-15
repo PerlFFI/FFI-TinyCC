@@ -5,7 +5,7 @@ use lib $FindBin::Bin;
 use testlib;
 use Test::More tests => 1;
 use FFI::TinyCC;
-use FFI::Raw;
+use FFI::Platypus;
 use File::Temp qw( tempdir );
 use File::chdir;
 use Path::Class qw( file dir );
@@ -42,7 +42,7 @@ subtest 'obj' => sub {
   
   subtest 'use' => sub {
   
-    plan tests => 4;
+    plan tests => 3;
   
     my $tcc = FFI::TinyCC->new;
     
@@ -58,10 +58,10 @@ subtest 'obj' => sub {
     })};
     is $@, '', 'tcc.compile_string';
   
-    my $ffi = eval { FFI::Raw->new_from_ptr($tcc->get_symbol('wrapper'), FFI::Raw::str) };
-    is $@, '', 'FFI::Raw.new_from_ptr';
+    my $ffi = FFI::Platypus->new;
+    my $f = $ffi->function($tcc->get_symbol('wrapper') => [] => 'string');
     
-    is $ffi->call, "rabbit", 'ffi.call';
+    is $f->call, "rabbit", 'ffi.call';
   
   };
 

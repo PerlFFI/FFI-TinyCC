@@ -3,9 +3,15 @@ use warnings;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib;
-use Test::More tests => 4;
+use Test::More;
 use FFI::TinyCC;
-use FFI::Raw;
+
+BEGIN {
+  plan skip_all => 'test requires FFI::Raw 0.32'
+    unless eval q{ use FFI::Raw 0.32 (); 1 };
+};
+
+plan tests => 4;
 
 my $tcc = FFI::TinyCC->new;
 

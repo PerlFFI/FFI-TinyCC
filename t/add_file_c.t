@@ -5,7 +5,6 @@ use lib $FindBin::Bin;
 use testlib;
 use Test::More tests => 1;
 use FFI::TinyCC;
-use FFI::Raw;
 use File::Temp qw( tempdir );
 use File::chdir;
 use Path::Class qw( file dir );

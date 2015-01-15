@@ -8,7 +8,7 @@ use FFI::TinyCC;
 use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
-use FFI::Raw;
+use FFI::Platypus;
 use Path::Class qw( file dir );
 
 plan skip_all => "unsupported on $^O" if $^O =~ /^(darwin|gnukfreebsd)$/;
@@ -47,11 +47,10 @@ subtest dll => sub {
   eval { $tcc->output_file($dll) };
   is $@, '', 'tcc.output_file';
   
-  my $ffi = FFI::Raw->new(
-    $dll, 'bar',
-    FFI::Raw::int,
-  );
+  my $ffi = FFI::Platypus->new;
+  $ffi->lib($dll);
+  my $f = $ffi->function(bar => [] => 'int');
   
-  is $ffi->call(), 47, 'ffi.call';
+  is $f->call(), 47, 'f.call';
 
 };

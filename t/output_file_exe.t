@@ -8,7 +8,7 @@ use FFI::TinyCC;
 use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
-use FFI::Raw;
+use FFI::Platypus;
 use Path::Class qw( file dir );
 
 plan skip_all => "unsupported on $^O" if $^O =~ /bsd$/i || $^O eq 'darwin';

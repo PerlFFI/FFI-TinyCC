@@ -3,6 +3,9 @@ use warnings;
 use FFI::TinyCC;
 use FFI::Raw;
 
+# Consider using FFI::Platypus instead!
+# see example/ffi_platypus.pl
+
 my $tcc = FFI::TinyCC->new;
 
 $tcc->compile_string(q{

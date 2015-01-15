@@ -5,7 +5,7 @@ use lib $FindBin::Bin;
 use testlib;
 use Test::More tests => 3;
 use FFI::TinyCC;
-use FFI::Raw;
+use FFI::Platypus::Declare qw( int );
 
 my $tcc = FFI::TinyCC->new;
 
@@ -15,5 +15,5 @@ is $@, '', 'tcc.compile_string';
 my $ptr = eval { $tcc->get_symbol('foo') };
 ok $ptr, "tcc.get_symbol('foo') == $ptr";
 
-my $foo = FFI::Raw->new_from_ptr($ptr, FFI::Raw::int);
-is $foo->call, 42, 'foo.call';
+function [$ptr => 'foo'] => [] => int;
+is foo(), 42, 'foo.call';
