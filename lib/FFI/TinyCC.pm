@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use 5.010;
 use FFI::Platypus;
+use FFI::Platypus::Memory qw( malloc free );
 use FFI::Raw;
 use Carp qw( croak carp );
 use File::ShareDir ();
@@ -100,13 +101,8 @@ $ffi->custom_type( opaque => tcc_t => {
 
 });
 
-$ffi->attach([tcc_new=>'_new'] => [] => 'tcc_t');
-
-use constant _delete => FFI::Raw->new(
-  _lib, 'tcc_delete',
-  FFI::Raw::void,
-  FFI::Raw::ptr,
-);
+$ffi->attach([tcc_new    => '_new'] => [] => 'tcc_t');
+$ffi->attach([tcc_delete => '_delete'] => ['tcc_t'] => 'void');
 
 use constant _set_error_func => FFI::Raw->new(
   _lib, 'tcc_set_error_func',
@@ -206,18 +202,6 @@ use constant _set_lib_path => FFI::Raw->new(
   FFI::Raw::ptr, FFI::Raw::str,
 );
 
-use constant _malloc => FFI::Raw->new(
-  undef, 'malloc',
-  FFI::Raw::ptr,
-  FFI::Raw::int,
-);
-
-use constant _free => FFI::Raw->new(
-  undef, 'free',
-  FFI::Raw::void,
-  FFI::Raw::ptr,
-);
-
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -262,19 +246,27 @@ sub _error
   $self;
 }
 
-sub DESTROY
+if(defined ${^GLOBAL_PHASE})
 {
-  my($self) = @_;
-
-  # weird things happen during global distruction.  The
-  # _delete and _free constants go bye bye sometimes.
-  # since the process is going to end anyway, freeing
-  # the resources for this instance can be skipped.
-  if(ref(_delete) eq 'FFI::Raw' && ref(_free) eq 'FFI::Raw')
-  {  
-    _delete->call($self->{handle});
+  *DESTROY = sub
+  {
+    my($self) = @_;
+    return if ${^GLOBAL_PHASE} eq 'DESTRUCT';
+    _delete($self);
     # TODO: should we do this?
-    _free->call($self->{store}) if defined $self->{store} && !$self->{no_free_store};
+    free($self->{store});
+  }
+}
+else
+{
+  require Devel::GlobalDestruction;
+  *DESTROY = sub
+  {
+    my($self) = @_;
+    return if Devel::GlobalDestruction::in_global_destruction();
+    _delete($self);
+    # TODO: should we do this?
+    free($self->{store});
   }
 }
 
@@ -524,7 +516,7 @@ sub get_symbol
   unless($self->{relocate})
   {
     my $size = _relocate->call($self->{handle}, undef);
-    $self->{store} = _malloc->call($size);
+    $self->{store} = malloc($size);
     my $r = _relocate->call($self->{handle}, $self->{store});
     FFI::TinyCC::Exception->new($self) if $r == -1;
     $self->{relocate} = 1;
