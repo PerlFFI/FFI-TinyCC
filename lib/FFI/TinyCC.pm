@@ -50,8 +50,9 @@ sub _dlext
   $^O eq 'MSWin32' ? 'dll' : $Config::Config{dlext};
 }
 
-use constant {
-  _lib => $ENV{FFI_TINYCC_LIBTCC_SO} || (eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
+our $ffi = FFI::Platypus->new;
+$ffi->lib(
+  $ENV{FFI_TINYCC_LIBTCC_SO} || (eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
     require Path::Class::File;
     Path::Class::File
       ->new($INC{'FFI/TinyCC.pm'})
@@ -60,11 +61,8 @@ use constant {
       ->parent
       ->file('share', 'libtcc.' . _dlext)
       ->stringify
-  }),
-};
-
-our $ffi = FFI::Platypus->new;
-$ffi->lib(_lib);
+  }
+));
 
 $ffi->custom_type( opaque => tcc_t => {
   perl_to_ffi => sub {
@@ -145,7 +143,7 @@ sub new
   {
     require File::Basename;
     require File::Spec;
-    my $path = File::Spec->catdir(File::Basename::dirname(_lib), 'lib');
+    my $path = File::Spec->catdir(File::Basename::dirname($ffi->lib), 'lib');
     $self->add_library_path($path);
   }
   
