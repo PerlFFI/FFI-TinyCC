@@ -2,6 +2,7 @@ package FFI::TinyCC;
 
 use strict;
 use warnings;
+use 5.008001;
 use FFI::Platypus;
 use FFI::Platypus::Memory qw( malloc free );
 use Carp qw( croak carp );
@@ -50,7 +51,7 @@ sub _dlext
 }
 
 use constant {
-  _lib => $ENV{FFI_TINYCC_LIBTCC_SO} // (eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
+  _lib => $ENV{FFI_TINYCC_LIBTCC_SO} || (eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
     require Path::Class::File;
     Path::Class::File
       ->new($INC{'FFI/TinyCC.pm'})

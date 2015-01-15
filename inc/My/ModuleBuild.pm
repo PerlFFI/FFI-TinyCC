@@ -3,6 +3,7 @@ package My::ModuleBuild;
 use strict;
 use warnings;
 use base qw( Module::Build );
+use 5.008001;
 use lib 'share';
 use My::DLL;
 

@@ -2,6 +2,7 @@ package FFI::TinyCC::Inline;
 
 use strict;
 use warnings;
+use 5.008001;
 use FFI::Platypus;
 use FFI::TinyCC;
 use Carp qw( croak );
