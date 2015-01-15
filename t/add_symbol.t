@@ -23,7 +23,7 @@ subtest 'FFI::Raw' => sub {
 
   my $callback = FFI::Raw::Callback->new(
     sub { $_[0] + $_[0] },
-    FFI::Raw::int, FFI::Raw::int,
+    FFI::Raw::int(), FFI::Raw::int(),
   );
 
   eval { $tcc->add_symbol('foo' => $callback) };
@@ -32,7 +32,7 @@ subtest 'FFI::Raw' => sub {
   eval { $tcc->compile_string($c_code) };
   is $@, '', 'tcc.compile_string';
 
-  my $ffi = eval { FFI::Raw->new_from_ptr($tcc->get_symbol('bar'), FFI::Raw::int) };
+  my $ffi = eval { FFI::Raw->new_from_ptr($tcc->get_symbol('bar'), FFI::Raw::int()) };
   is $@, '', 'FFI::Raw.new_from_ptr';
 
   is $ffi->call, (3+3)*2, 'ffi.call';

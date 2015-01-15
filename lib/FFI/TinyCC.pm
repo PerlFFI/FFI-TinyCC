@@ -414,6 +414,18 @@ sub get_symbol
   _get_symbol($self, $symbol_name);
 }
 
+=head3 output_file
+
+ $tcc->output_file($filename);
+
+Output the generated code (either executable, object or DLL) to the given filename.
+The type of output is specified by the L<set_output_type|FFI::TinyCC#set_output_type>
+method.
+
+=cut
+
+_method output_file => qw( string );
+
 =head3 get_ffi_raw
 
 B<DEPRECATED>
@@ -433,9 +445,7 @@ Do this:
  use FFI::Raw;
  my $function = FFI::Raw->new_from_ptr($ffi->get_symbol($name), $ret, @args);
 
-Also, L<FFI::Raw> will be replaced as a prerequisite in an upcoming version
-of L<FFI::TinyCC>, so make sure that you C<use FFI::Raw> if you are using
-it.
+Or better yet, use L<FFI::Platypus> instead.
 
 =cut
 
@@ -453,18 +463,6 @@ sub get_ffi_raw
   require FFI::Raw;
   FFI::Raw->new_from_ptr($self->get_symbol($symbol), @types);
 }
-
-=head3 output_file
-
- $tcc->output_file($filename);
-
-Output the generated code (either executable, object or DLL) to the given filename.
-The type of output is specified by the L<set_output_type|FFI::TinyCC#set_output_type>
-method.
-
-=cut
-
-_method output_file => qw( string );
 
 package
   FFI::TinyCC::Exception;

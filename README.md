@@ -167,6 +167,14 @@ the [FFI::Platypus#function](https://metacpan.org/pod/FFI::Platypus#function) me
 [FFI::Platypus::Declare#function](https://metacpan.org/pod/FFI::Platypus::Declare#function) function or similar interface that
 takes a pointer to a C function.
 
+### output\_file
+
+    $tcc->output_file($filename);
+
+Output the generated code (either executable, object or DLL) to the given filename.
+The type of output is specified by the [set\_output\_type](https://metacpan.org/pod/FFI::TinyCC#set_output_type)
+method.
+
 ### get\_ffi\_raw
 
 **DEPRECATED**
@@ -186,17 +194,7 @@ Do this:
     use FFI::Raw;
     my $function = FFI::Raw->new_from_ptr($ffi->get_symbol($name), $ret, @args);
 
-Also, [FFI::Raw](https://metacpan.org/pod/FFI::Raw) will be replaced as a prerequisite in an upcoming version
-of [FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC), so make sure that you `use FFI::Raw` if you are using
-it.
-
-### output\_file
-
-    $tcc->output_file($filename);
-
-Output the generated code (either executable, object or DLL) to the given filename.
-The type of output is specified by the [set\_output\_type](https://metacpan.org/pod/FFI::TinyCC#set_output_type)
-method.
+Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instead.
 
 # EXAMPLES
 
