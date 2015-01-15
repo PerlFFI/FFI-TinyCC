@@ -1,6 +1,5 @@
 Alien::TinyCC
 Archive::Ar
-Carp
 FFI::Platypus
 FFI::Raw
 File::ShareDir
