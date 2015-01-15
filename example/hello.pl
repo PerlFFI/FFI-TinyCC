@@ -1,8 +1,6 @@
 use strict;
 use warnings;
-use 5.010;
 use FFI::TinyCC;
-use FFI::Raw;
 
 my $tcc = FFI::TinyCC->new;
 

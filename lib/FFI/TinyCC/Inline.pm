@@ -2,7 +2,6 @@ package FFI::TinyCC::Inline;
 
 use strict;
 use warnings;
-use 5.010;
 use FFI::TinyCC;
 use FFI::Raw;
 use Carp qw( croak );
@@ -25,7 +24,7 @@ our @EXPORT = @EXPORT_OK;
    }
  };
  
- say square(4); # prints 16
+ print square(4), "\n"; # prints 16
 
  use FFI::TinyCC::Inline qw( tcc_eval );
  
@@ -119,7 +118,7 @@ You can specify Tiny C options using the scoped pragmata, like so:
  use FFI::TinyCC::Inline options => "-I/foo/include -L/foo/lib -DFOO=1";
  
  # prints 1
- say tcc_eval q{
+ print tcc_eval q{
  #include <foo.h> /* will search /foo/include
  int main()
  {
@@ -164,7 +163,7 @@ types.
    }
  };
  
- say foo(1,2,3); # prints 6
+ print foo(1,2,3), "\n"; # prints 6
 
 The special argument type of C<(int argc, char **argv)> is recognized and
 will be translated from the list of arguments passed in.  Example:

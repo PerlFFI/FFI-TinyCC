@@ -2,7 +2,6 @@ package FFI::TinyCC;
 
 use strict;
 use warnings;
-use 5.010;
 use FFI::Platypus;
 use FFI::Platypus::Memory qw( malloc free );
 use FFI::Raw;
@@ -387,8 +386,10 @@ sub run
 
  my $pointer = $tcc->get_symbol($symbol_name);
 
-Return symbol value or undef if not found.  This can be passed into
-L<FFI::Raw> or similar for use in your script.
+Return symbol address or undef if not found.  This can be passed into
+the L<FFI::Platypus#function> method, L<FFI::Platypus#attach> method,
+L<FFI::Platypus::Declare#function> function or similar interface that
+takes a pointer to a C function.
 
 =cut
 
@@ -528,7 +529,7 @@ sub as_string
 
 =head2 Creating a FFI::Raw handle from a Tiny C function
 
-# EXAMPLE: example/ffi.pl
+# EXAMPLE: example/ffi_platypus.pl
 
 =head1 CAVEATS
 

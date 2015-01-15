@@ -2,7 +2,6 @@ package My::DLL;
 
 use strict;
 use warnings;
-use 5.010;
 use autodie qw( :all );  # need IPC::System::Simple
 use Alien::TinyCC;
 use Archive::Ar 2.02;
@@ -26,9 +25,11 @@ my $share = Path::Class::File
 
 my $log = $share->file('build.log')->opena;
 
+sub say { print @_, "\n" }
+
 sub tcc_clean
 {
-  say $log "--- clean ", time, '---';
+  say $log "--- clean ", time, '---', "\n";
   for(grep { $_->basename =~ /^libtcc\./ } $share->children)
   {
     say $log "unlink $_";

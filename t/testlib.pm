@@ -3,7 +3,6 @@ package
 
 use strict;
 use warnings;
-use 5.010;
 use Config;
 use Path::Class qw( file dir );
 

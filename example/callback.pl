@@ -1,11 +1,10 @@
 use strict;
 use warnings;
-use 5.010;
 use FFI::TinyCC;
 use FFI::Raw;
 
 my $say = FFI::Raw::Callback->new(
-  sub { say $_[0] },
+  sub { print $_[0], "\n" },
   FFI::Raw::void,
   FFI::Raw::str,
 );

@@ -149,8 +149,10 @@ Add the given directory to the search path used to find libraries.
 
     my $pointer = $tcc->get_symbol($symbol_name);
 
-Return symbol value or undef if not found.  This can be passed into
-[FFI::Raw](https://metacpan.org/pod/FFI::Raw) or similar for use in your script.
+Return symbol address or undef if not found.  This can be passed into
+the [FFI::Platypus#function](https://metacpan.org/pod/FFI::Platypus#function) method, [FFI::Platypus#attach](https://metacpan.org/pod/FFI::Platypus#attach) method,
+[FFI::Platypus::Declare#function](https://metacpan.org/pod/FFI::Platypus::Declare#function) function or similar interface that
+takes a pointer to a C function.
 
 ### get\_ffi\_raw
 
@@ -187,11 +189,7 @@ method.
 
 ## Calling Tiny C code from Perl
 
-    use strict;
-    use warnings;
-    use 5.010;
     use FFI::TinyCC;
-    use FFI::Raw;
     
     my $tcc = FFI::TinyCC->new;
     
@@ -209,14 +207,11 @@ method.
 
 ## Calling Perl from Tiny C code
 
-    use strict;
-    use warnings;
-    use 5.010;
     use FFI::TinyCC;
     use FFI::Raw;
     
     my $say = FFI::Raw::Callback->new(
-      sub { say $_[0] },
+      sub { print $_[0], "\n" },
       FFI::Raw::void,
       FFI::Raw::str,
     );
@@ -246,11 +241,8 @@ method.
 
 ## Creating a FFI::Raw handle from a Tiny C function
 
-    use strict;
-    use warnings;
-    use 5.010;
     use FFI::TinyCC;
-    use FFI::Raw;
+    use FFI::Platypus::Declare qw( int );
     
     my $tcc = FFI::TinyCC->new;
     
@@ -262,16 +254,14 @@ method.
       }
     });
     
-    my $value = (shift @ARGV) // 4;
+    my $value = shift @ARGV;
+    $value = 4 unless defined $value;
     
-    # $square isa FFI::Raw
-    my $square = $tcc->get_ffi_raw(
-      'calculate_square',
-      FFI::Raw::int,  # return type
-      FFI::Raw::int,  # argument types
-    );
+    my $address = $tcc->get_symbol('calculate_square');
     
-    say $square->call($value);
+    function [$address => 'square'] => [int] => int;
+    
+    print square($value), "\n";
 
 # CAVEATS
 

@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use 5.010;
 use FFI::TinyCC;
 use FFI::Raw;
 
@@ -14,13 +13,16 @@ $tcc->compile_string(q{
   }
 });
 
-my $value = (shift @ARGV) // 4;
+my $value = (shift @ARGV);
+$value = 4 unless defined $value;
+
+my $address = $tcc->get_symbol('calculate_square');
 
 # $square isa FFI::Raw
-my $square = $tcc->get_ffi_raw(
-  'calculate_square',
+my $square = FFI::Raw->new_from_ptr(
+  $address,
   FFI::Raw::int,  # return type
   FFI::Raw::int,  # argument types
 );
 
-say $square->call($value);
+print $square->call($value), "\n";
