@@ -2,8 +2,8 @@ package FFI::TinyCC::Inline;
 
 use strict;
 use warnings;
+use FFI::Platypus;
 use FFI::TinyCC;
-use FFI::Raw;
 use Carp qw( croak );
 use base qw( Exporter );
 
@@ -39,28 +39,31 @@ our @EXPORT = @EXPORT_OK;
 =head1 DESCRIPTION
 
 This module provides a simplified interface to FFI::TinyCC, that allows you
-to write Perl subs in C.  It is inspired by L<XS::TCC>, but it uses L<FFI::Raw>
+to write Perl subs in C.  It is inspired by L<XS::TCC>, but it uses L<FFI::Platypus>
 to create bindings instead of XS.
 
 =cut
 
+my $ffi = FFI::Platypus->new;
+
+# TODO: support platypus types like pointers and arrays
 my %typemap = (
-  'int'            => FFI::Raw::int,
-  'signed int'     => FFI::Raw::int,
-  'unsigned int'   => FFI::Raw::uint,
-  'void'           => FFI::Raw::void,
-  'short'          => FFI::Raw::short,
-  'signed short'   => FFI::Raw::short,
-  'unsigned short' => FFI::Raw::ushort,
-  'long'           => FFI::Raw::long,
-  'signed long'    => FFI::Raw::long,
-  'unsigned long'  => FFI::Raw::ulong,
-  'char'           => FFI::Raw::char,
-  'signed char'    => FFI::Raw::char,
-  'unsigned char'  => FFI::Raw::uchar,
-  'float'          => FFI::Raw::float,
-  'double'         => FFI::Raw::double,
-  'char *'         => FFI::Raw::str,
+  'int'            => 'int',
+  'signed int'     => 'signed int',
+  'unsigned int'   => 'unsigned int',
+  'void'           => 'void',
+  'short'          => 'short',
+  'signed short'   => 'signed short',
+  'unsigned short' => 'unsigned short',
+  'long'           => 'long',
+  'signed long'    => 'signed long',
+  'unsigned long'  => 'unsigned long',
+  'char'           => 'char',
+  'signed char'    => 'signed char',
+  'unsigned char'  => 'unsigned char',
+  'float'          => 'float',
+  'double'         => 'double',
+  'char *'         => 'string',
 );
 
 sub _typemap ($)
@@ -69,7 +72,7 @@ sub _typemap ($)
   $type =~ s{^const }{};
   return $typemap{$type}
     if defined $typemap{$type};
-  return FFI::Raw::ptr if $type =~ /\*$/;
+  return 'opaque' if $type =~ /\*$/;
   croak "unknown type: $type";
 }
 
@@ -78,34 +81,25 @@ sub _generate_sub ($$$)
   my($func_name, $func, $tcc) = @_;
   my $sub;
   
+  my $address = $tcc->get_symbol($func_name);
+  
   if(@{ $func->{arg_types} } == 2
   && $func->{arg_types}->[0] eq 'int'
   && $func->{arg_types}->[1] =~ /^(const |)char \*\*$/)
   {
-    my $ffi = do {
-      local $FFI::TinyCC::_get_ffi_raw_deprecation = 0;
-      $tcc->get_ffi_raw($func_name, 
-        _typemap $func->{return_type}, # return type
-         FFI::Raw::int, FFI::Raw::ptr, # argument types
-       );
-    };
+    my $f = $ffi->function($address => ['int','opaque'] => _typemap $func->{return_type});
     $sub = sub {
       my $argc = scalar @_;
       my @c_strings = map { "$_\0" } @_;
       my $ptrs = pack 'P' x $argc, @c_strings;
       my $argv = unpack 'L!', pack 'P', $ptrs;
-      $ffi->call($argc, $argv);
+      $f->call($argc, $argv);
     };
   }
   else
   {
-    my @types = map { _typemap $_ } ($func->{return_type}, @{ $func->{arg_types} });
-    my $ffi = do {
-      local $FFI::TinyCC::_get_ffi_raw_deprecation = 0;
-      $tcc->get_ffi_raw($func_name, @types);
-    };
-    no strict 'refs';
-    $sub = sub { $ffi->call(@_) };
+    my $f = $ffi->function($address => [map { _typemap $_ } @{ $func->{arg_types} }] => _typemap $func->{return_type});
+    $sub = sub { $f->call(@_) };
   }
   
   $sub;
