@@ -5,7 +5,7 @@ Tiny C Compiler for FFI
 # SYNOPSIS
 
     use FFI::TinyCC;
-    use FFI::Raw;
+    use FFI::Platypus::Declare qw( int );
     
     my $tcc = FFI::TinyCC->new;
     
@@ -17,14 +17,10 @@ Tiny C Compiler for FFI
       }
     });
     
-    my $find_square = FFI::Raw->new_from_ptr(
-      $tcc->get_symbol('find_square'),
-      FFI::Raw::int,  # return type
-      FFI::Raw::int,  # argument types
-    );
+    my $address = $tcc->get_symbol('find_square');
+    function [$address => 'find_square'] => [int] => int;
     
-    # $find_square isa FFI::Raw
-    say $find_square->call(4); # says 16
+    print find_square(4), "\n"; # prints 16
 
 # DESCRIPTION
 
@@ -95,6 +91,12 @@ Add the given path to the list of paths used to search for include files.
     $tcc->add_sysinclude_path($path);
 
 Add the given path to the list of paths used to search for system include files.
+
+### set\_lib\_path
+
+    $tcc->set_lib_path($path);
+
+Set the lib path
 
 ### define\_symbol
 

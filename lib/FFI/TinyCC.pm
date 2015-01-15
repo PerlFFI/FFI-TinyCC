@@ -15,7 +15,7 @@ use File::ShareDir ();
 =head1 SYNOPSIS
 
  use FFI::TinyCC;
- use FFI::Raw;
+ use FFI::Platypus::Declare qw( int );
  
  my $tcc = FFI::TinyCC->new;
  
@@ -27,14 +27,10 @@ use File::ShareDir ();
    }
  });
  
- my $find_square = FFI::Raw->new_from_ptr(
-   $tcc->get_symbol('find_square'),
-   FFI::Raw::int,  # return type
-   FFI::Raw::int,  # argument types
- );
+ my $address = $tcc->get_symbol('find_square');
+ function [$address => 'find_square'] => [int] => int;
  
- # $find_square isa FFI::Raw
- say $find_square->call(4); # says 16
+ print find_square(4), "\n"; # prints 16
 
 =head1 DESCRIPTION
 
@@ -66,21 +62,6 @@ use constant {
       ->file('share', 'libtcc.' . _dlext)
       ->stringify
   }),
-  
-  # tcc_set_output_type
-  _TCC_OUTPUT_MEMORY     => 0,
-  _TCC_OUTPUT_EXE        => 1,
-  _TCC_OUTPUT_DLL        => 2,
-  _TCC_OUTPUT_OBJ        => 3,
-  _TCC_OUTPUT_PREPROCESS => 4,
-
-  # tcc_relocate
-  _TCC_RELOCATE_AUTO     => 1,
-  
-  # ??
-  _TCC_OUTPUT_FORMAT_ELF    => 0,
-  _TCC_OUTPUT_FORMAT_BINARY => 1,
-  _TCC_OUTPUT_FORMAT_COFF   => 2,
 };
 
 my $ffi = FFI::Platypus->new;
@@ -101,12 +82,25 @@ $ffi->custom_type( opaque => tcc_t => {
 
 });
 
+do {
+  my %output_type = qw(
+    memory 0
+    exe    1
+    dll    2
+    obj    3
+  );
+
+  $ffi->custom_type( int => output_t => {
+    perl_to_ffi => sub { $output_type{$_[0]} },
+  });
+};
+
 $ffi->type('int' => 'error_t');
 $ffi->type('(opaque,string)->void' => 'error_handler_t');
 
-$ffi->attach([tcc_new            => '_new']            => []                                     => 'tcc_t');
-$ffi->attach([tcc_delete         => '_delete']         => ['tcc_t']                              => 'void');
-$ffi->attach([tcc_set_error_func => '_set_error_func'] => ['tcc_t', 'opaque', 'error_handler_t'] => 'void');
+$ffi->attach([tcc_new             => '_new']             => []                                     => 'tcc_t');
+$ffi->attach([tcc_delete          => '_delete']          => ['tcc_t']                              => 'void');
+$ffi->attach([tcc_set_error_func  => '_set_error_func']  => ['tcc_t', 'opaque', 'error_handler_t'] => 'void');
 
 sub _method ($;@)
 {
@@ -123,58 +117,10 @@ sub _method ($;@)
   die $@ if $@;
 }
 
-use constant _add_sysinclude_path => FFI::Raw->new(
-  _lib, 'tcc_add_sysinclude_path',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
-
-use constant _define_symbol => FFI::Raw->new(
-  _lib, 'tcc_define_symbol',
-  FFI::Raw::void,
-  FFI::Raw::ptr, FFI::Raw::str, FFI::Raw::str,
-);
-
-use constant _undefine_symbol => FFI::Raw->new(
-  _lib, 'tcc_undefine_symbol',
-  FFI::Raw::void,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
-
-use constant _compile_string => FFI::Raw->new(
-  _lib, 'tcc_compile_string',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
-
-use constant _set_output_type => FFI::Raw->new(
-  _lib, 'tcc_set_output_type',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::int,
-);
-
-use constant _add_library_path => FFI::Raw->new(
-  _lib, 'tcc_add_library_path',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
-
-use constant _add_library => FFI::Raw->new(
-  _lib, 'tcc_add_library',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
-
 use constant _add_symbol => FFI::Raw->new(
   _lib, 'tcc_add_symbol',
   FFI::Raw::int,
   FFI::Raw::ptr, FFI::Raw::str, FFI::Raw::ptr,
-);
-
-use constant _output_file => FFI::Raw->new(
-  _lib, 'tcc_output_file',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
 );
 
 use constant _run => FFI::Raw->new(
@@ -192,12 +138,6 @@ use constant _relocate => FFI::Raw->new(
 use constant _get_symbol => FFI::Raw->new(
   _lib, 'tcc_get_symbol',
   FFI::Raw::ptr,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
-
-use constant _set_lib_path => FFI::Raw->new(
-  _lib, 'tcc_set_lib_path',
-  FFI::Raw::void,
   FFI::Raw::ptr, FFI::Raw::str,
 );
 
@@ -306,13 +246,7 @@ Compile a string containing C source code.
 
 =cut
 
-sub compile_string
-{
-  my($self, $code) = @_;
-  my $r = _compile_string->call($self->{handle}, $code);
-  die FFI::TinyCC::Exception->new($self) if $r == -1;
-  $self;
-}
+_method compile_string => qw( string );
 
 =head3 add_symbol
 
@@ -352,12 +286,17 @@ Add the given path to the list of paths used to search for system include files.
 
 =cut
 
-sub add_sysinclude_path
-{
-  my($self, $path) = @_;
-  _add_sysinclude_path->call($self->{handle}, $path);
-  $self;
-}
+_method add_sysinclude_path => qw( string );
+
+=head3 set_lib_path
+
+ $tcc->set_lib_path($path);
+
+Set the lib path
+
+=cut
+
+_method set_lib_path => qw( string );
 
 =head3 define_symbol
 
@@ -368,12 +307,7 @@ Define the given symbol, optionally with the specified value.
 
 =cut
 
-sub define_symbol
-{
-  my($self, $name, $value) = @_;
-  _define_symbol->call($self->{handle}, $name, $value);
-  $self;
-}
+$ffi->attach([tcc_define_symbol=>'define_symbol'] => ['tcc_t', 'string', 'string'] => 'void');
 
 =head3 undefine_symbol
 
@@ -383,12 +317,7 @@ Undefine the given symbol.
 
 =cut
 
-sub undefine_symbol
-{
-  my($self, $name) = @_;
-  _undefine_symbol->call($self->{handle}, $name);
-  $self;
-}
+$ffi->attach([tcc_undefine_symbol=>'undefine_symbol'] => ['tcc_t', 'string', 'string'] => 'void');
 
 =head2 Link / run
 
@@ -408,20 +337,7 @@ As a basic baseline at least C<memory> should be supported.
 
 =cut
 
-my %output_type = (
-  memory => 0,
-  exe    => 1,
-  dll    => 2,
-  obj    => 3,
-);
-
-sub set_output_type
-{
-  my($self, $type) = @_;
-  croak "unknown type: $type" unless defined $output_type{$type};
-  _set_output_type->call($self->{handle}, $output_type{$type});
-  $self;
-}
+_method set_output_type => qw( output_t );
 
 =head3 add_library
 
@@ -433,13 +349,7 @@ Add the given library when linking.  Example:
 
 =cut
 
-sub add_library
-{
-  my($self, $libname) = @_;
-  my $r = _add_library->call($self->{handle}, $libname);
-  die FFI::TinyCC::Exception->new($self) if $r == -1;
-  $self;
-}
+_method add_library => qw( string );
 
 =head3 add_library_path
 
@@ -449,13 +359,7 @@ Add the given directory to the search path used to find libraries.
 
 =cut
 
-sub add_library_path
-{
-  my($self, $pathname) = @_;
-  my $r = _add_library_path->call($self->{handle}, $pathname);
-  die FFI::TinyCC::Exception->new($self) if $r == -1;
-  $self;  
-}
+_method add_library_path => qw( string );
 
 =head3 run
 
@@ -539,6 +443,7 @@ sub get_ffi_raw
   croak "you must at least specify a return type" unless @types > 0;
   my $ptr = $self->get_symbol($symbol);
   croak "$symbol not found" unless $ptr;
+  require FFI::Raw;
   FFI::Raw->new_from_ptr($self->get_symbol($symbol), @types);
 }
 
@@ -552,13 +457,7 @@ method.
 
 =cut
 
-sub output_file
-{
-  my($self, $filename) = @_;
-  my $r = _output_file->call($self->{handle}, $filename);
-  die FFI::TinyCC::Exception->new($self) if $r == -1;
-  $self;
-}
+_method output_file => qw( string );
 
 package
   FFI::TinyCC::Exception;
