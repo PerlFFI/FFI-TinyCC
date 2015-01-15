@@ -16,7 +16,7 @@ bar()
 EOF
 
 subtest 'FFI::Raw' => sub {
-  plan skip_all => 'test requires FFI::Raw' unless eval q{ require FFI::Raw; 1 };
+  plan skip_all => 'test requires FFI::Raw' unless eval q{ use FFI::Raw 0.32 (); 1 };
   plan tests => 4;
 
   my $tcc = FFI::TinyCC->new;

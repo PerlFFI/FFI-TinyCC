@@ -1,6 +1,11 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - migrate to FFI::Platypus.  Should still interact with FFI::Raw
+    as before.
+  - Your FFI::Raw code may break if you are not explicitly using
+    FFI::Raw, and depending on FFI::TinyCC to pull it in for you.
+    Stop doing that.
 
 0.10      2015-01-08 10:09:47 -0500
   - get_ffi_raw method is deprecated and will issue a warning
