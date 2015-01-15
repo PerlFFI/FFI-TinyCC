@@ -3,6 +3,7 @@ package FFI::TinyCC;
 use strict;
 use warnings;
 use 5.010;
+use FFI::Platypus;
 use FFI::Raw;
 use Carp qw( croak carp );
 use File::ShareDir ();
@@ -81,10 +82,25 @@ use constant {
   _TCC_OUTPUT_FORMAT_COFF   => 2,
 };
 
-use constant _new => FFI::Raw->new(
-  _lib, 'tcc_new',
-  FFI::Raw::ptr,
-);
+my $ffi = FFI::Platypus->new;
+$ffi->lib(_lib);
+
+$ffi->custom_type( opaque => tcc_t => {
+  perl_to_ffi => sub {
+    $_[0]->{handle},
+  },
+  
+  ffi_to_perl => sub {
+    {
+      handle   => $_[0],
+      relocate => 0,
+      error    => [],
+    };
+  },
+
+});
+
+$ffi->attach([tcc_new=>'_new'] => [] => 'tcc_t');
 
 use constant _delete => FFI::Raw->new(
   _lib, 'tcc_delete',
@@ -128,11 +144,7 @@ use constant _undefine_symbol => FFI::Raw->new(
   FFI::Raw::ptr, FFI::Raw::str,
 );
 
-use constant _add_file => FFI::Raw->new(
-  _lib, 'tcc_add_file',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
+$ffi->attach([tcc_add_file => '_add_file'] => ['tcc_t','string'] => 'int');
 
 use constant _compile_string => FFI::Raw->new(
   _lib, 'tcc_compile_string',
@@ -219,12 +231,8 @@ Create a new TinyCC instance.
 sub new
 {
   my($class, %opt) = @_;
-  
-  my $self = bless {
-    handle   => _new->call,
-    relocate => 0,
-    error    => [],
-  }, $class;
+
+  my $self = bless _new(), $class;
   
   $self->{error_cb} = FFI::Raw::Callback->new(
     sub { push @{ $self->{error} }, $_[1] },
@@ -309,7 +317,7 @@ On windows adding a DLL is not supported via this interface.
 sub add_file
 {
   my($self, $filename) = @_;
-  my $r = _add_file->call($self->{handle}, $filename);
+  my $r = _add_file($self, $filename);
   die FFI::TinyCC::Exception->new($self) if $r == -1;
   $self;
 }
