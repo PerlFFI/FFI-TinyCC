@@ -12,7 +12,7 @@ diag ''; diag '';
 
 eval q{
   use FFI::TinyCC;
-  diag 'FFI::TinyCC::_lib=' . FFI::TinyCC::_lib();
+  diag "lib=$_" for $FFI::TinyCC::ffi->lib;
 };
 
 diag "error: $@" if $@;

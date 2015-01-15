@@ -64,7 +64,7 @@ use constant {
   }),
 };
 
-my $ffi = FFI::Platypus->new;
+our $ffi = FFI::Platypus->new;
 $ffi->lib(_lib);
 
 $ffi->custom_type( opaque => tcc_t => {
