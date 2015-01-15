@@ -104,22 +104,25 @@ $ffi->custom_type( opaque => tcc_t => {
 $ffi->attach([tcc_new    => '_new'] => [] => 'tcc_t');
 $ffi->attach([tcc_delete => '_delete'] => ['tcc_t'] => 'void');
 
+sub _method ($;@)
+{
+  my($name, @args) = @_;
+  $ffi->attach(["tcc_$name" => "_$name"] => ['tcc_t', @args] => 'int');
+  eval  '# line '. __LINE__ . ' "' . __FILE__ . qq("\n) .qq{
+    sub $name
+    {
+      my \$r = _$name (\@_);
+      die FFI::TinyCC::Exception->new(\$_[0]) if \$r == -1;
+      \$_[0];
+    }
+  };
+  die $@ if $@;
+}
+
 use constant _set_error_func => FFI::Raw->new(
   _lib, 'tcc_set_error_func',
   FFI::Raw::void,
   FFI::Raw::ptr, FFI::Raw::ptr, FFI::Raw::ptr,
-);
-
-use constant _set_options => FFI::Raw->new(
-  _lib, 'tcc_set_options',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
-);
-
-use constant _add_include_path => FFI::Raw->new(
-  _lib, 'tcc_add_include_path',
-  FFI::Raw::int,
-  FFI::Raw::ptr, FFI::Raw::str,
 );
 
 use constant _add_sysinclude_path => FFI::Raw->new(
@@ -139,8 +142,6 @@ use constant _undefine_symbol => FFI::Raw->new(
   FFI::Raw::void,
   FFI::Raw::ptr, FFI::Raw::str,
 );
-
-$ffi->attach([tcc_add_file => '_add_file'] => ['tcc_t','string'] => 'int');
 
 use constant _compile_string => FFI::Raw->new(
   _lib, 'tcc_compile_string',
@@ -286,13 +287,7 @@ Set compiler and linker options, as you would on the command line, for example:
 
 =cut
 
-sub set_options
-{
-  my($self, $options) = @_;
-  my $r = _set_options->call($self->{handle}, $options);
-  die FFI::TinyCC::Exception->new($self) if $r == -1;
-  $self;
-}
+_method set_options => qw( string );
 
 =head3 add_file
 
@@ -306,13 +301,7 @@ On windows adding a DLL is not supported via this interface.
 
 =cut
 
-sub add_file
-{
-  my($self, $filename) = @_;
-  my $r = _add_file($self, $filename);
-  die FFI::TinyCC::Exception->new($self) if $r == -1;
-  $self;
-}
+_method add_file => qw( string );
 
 =head3 compile_string
 
@@ -358,12 +347,7 @@ Add the given path to the list of paths used to search for include files.
 
 =cut
 
-sub add_include_path
-{
-  my($self, $path) = @_;
-  _add_include_path->call($self->{handle}, $path);
-  $self;
-}
+_method add_include_path => qw( string );
 
 =head3 add_sysinclude_path
 
