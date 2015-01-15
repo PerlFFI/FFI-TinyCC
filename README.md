@@ -219,34 +219,30 @@ Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) inste
 ## Calling Perl from Tiny C code
 
     use FFI::TinyCC;
-    use FFI::Raw;
+    use FFI::Platypus::Declare qw( opaque );
+    use FFI::Platypus::Memory qw( cast );
     
-    my $say = FFI::Raw::Callback->new(
-      sub { print $_[0], "\n" },
-      FFI::Raw::void,
-      FFI::Raw::str,
-    );
+    my $say = closure { print $_[0], "\n" };
+    my $ptr = cast '(string)->void' => opaque => $say;
     
     my $tcc = FFI::TinyCC->new;
+    $tcc->add_symbol(say => $ptr);
     
-    $tcc->add_symbol(say => $say);
-    
-    $tcc->compile_string(q{
+    $tcc->compile_string(<<EOF);
     extern void say(const char *);
     
     int
     main(int argc, char *argv[])
     {
       int i;
-      for(i=1; i<argc; i++)
+      for(i=0; i<argc; i++)
       {
         say(argv[i]);
       }
     }
-    });
+    EOF
     
-    # use '-' for the program name
-    my $r = $tcc->run('-', @ARGV);
+    my $r = $tcc->run($0, @ARGV);
     
     exit $r;
 
