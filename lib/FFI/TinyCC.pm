@@ -101,13 +101,17 @@ $ffi->custom_type( opaque => tcc_t => {
 
 });
 
-$ffi->attach([tcc_new    => '_new'] => [] => 'tcc_t');
-$ffi->attach([tcc_delete => '_delete'] => ['tcc_t'] => 'void');
+$ffi->type('int' => 'error_t');
+$ffi->type('(opaque,string)->void' => 'error_handler_t');
+
+$ffi->attach([tcc_new            => '_new']            => []                                     => 'tcc_t');
+$ffi->attach([tcc_delete         => '_delete']         => ['tcc_t']                              => 'void');
+$ffi->attach([tcc_set_error_func => '_set_error_func'] => ['tcc_t', 'opaque', 'error_handler_t'] => 'void');
 
 sub _method ($;@)
 {
   my($name, @args) = @_;
-  $ffi->attach(["tcc_$name" => "_$name"] => ['tcc_t', @args] => 'int');
+  $ffi->attach(["tcc_$name" => "_$name"] => ['tcc_t', @args] => 'error_t');
   eval  '# line '. __LINE__ . ' "' . __FILE__ . qq("\n) .qq{
     sub $name
     {
@@ -118,12 +122,6 @@ sub _method ($;@)
   };
   die $@ if $@;
 }
-
-use constant _set_error_func => FFI::Raw->new(
-  _lib, 'tcc_set_error_func',
-  FFI::Raw::void,
-  FFI::Raw::ptr, FFI::Raw::ptr, FFI::Raw::ptr,
-);
 
 use constant _add_sysinclude_path => FFI::Raw->new(
   _lib, 'tcc_add_sysinclude_path',
@@ -219,13 +217,10 @@ sub new
 
   my $self = bless _new(), $class;
   
-  $self->{error_cb} = FFI::Raw::Callback->new(
-    sub { push @{ $self->{error} }, $_[1] },
-    FFI::Raw::void,
-    FFI::Raw::ptr, FFI::Raw::str,
-  );
-  
-  _set_error_func->call($self->{handle}, undef, $self->{error_cb});
+  $self->{error_cb} = $ffi->closure(sub {
+    push @{ $self->{error} }, $_[1];
+  });
+  _set_error_func($self, undef, $self->{error_cb});
   
   if($^O eq 'MSWin32')
   {
