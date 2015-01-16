@@ -14,7 +14,7 @@ install:
   - cpanm -n File::chdir
   - cpanm -n Path::Class
   - cpanm -n IPC::System::Simple
-  - cpanm -n https://dist.wdlabs.com/FFI-Platypus-0.06.tar.gz
+  - cpanm -n https://dist.wdlabs.com/FFI-Platypus-0.07.tar.gz
 
 perl:
   - "5.10"
