@@ -285,6 +285,7 @@ We use the fork that comes with [Alien::TinyCC](https://metacpan.org/pod/Alien::
 - [Tiny C Compiler Reference Documentation](http://bellard.org/tcc/tcc-doc.html)
 - [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus)
 - [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC)
+- [C::TinyCompiler](https://metacpan.org/pod/C::TinyCompiler)
 
 # BUNDLED SOFTWARE
 

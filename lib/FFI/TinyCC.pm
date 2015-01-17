@@ -556,6 +556,8 @@ We use the fork that comes with L<Alien::TinyCC>.
 
 =item L<Alien::TinyCC>
 
+=item L<C::TinyCompiler>
+
 =back
 
 =head1 BUNDLED SOFTWARE
