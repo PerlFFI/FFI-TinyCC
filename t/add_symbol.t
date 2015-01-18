@@ -42,13 +42,12 @@ subtest 'FFI::Platypus' => sub {
   plan tests => 4;
 
   use FFI::Platypus;
-  use FFI::Platypus::Memory qw( cast );
 
   my $tcc = FFI::TinyCC->new;
   my $ffi = FFI::Platypus->new;
   
   my $closure = $tcc->{foo} = $ffi->closure(sub { $_[0] + $_[0] });
-  my $pointer = cast '(int)->int' => 'opaque', $closure;
+  my $pointer = $ffi->cast('(int)->int' => 'opaque', $closure);
   note sprintf("address = 0x%x", $pointer);
   
   eval { $tcc->add_symbol('foo' => $pointer) };

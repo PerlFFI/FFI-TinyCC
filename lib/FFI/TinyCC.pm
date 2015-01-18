@@ -236,11 +236,10 @@ See example below for how to use this to call Perl from Tiny C code.
 It will accept a L<FFI::Raw::Callback> at a performance penalty.
 If possible pass in the pointer to the C entry point instead.
 
-If you are using L<FFI::Platypus> you can use L<FFI::Platypus::Memory#cast>
-to get a pointer to a closure:
+If you are using L<FFI::Platypus> you can use L<FFI::Platypus#cast>
+or L<FFI::Platypus::Declare#cast> to get a pointer to a closure:
 
  use FFI::Platypus::Declare;
- use FFI::Platypus::Memory qw( cast );
  my $clousre = closure { return $_[0]+1 };
  my $pointer = cast '(int)->int' => 'opaque', $closure;
  

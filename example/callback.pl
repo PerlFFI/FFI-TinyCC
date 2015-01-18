@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use FFI::TinyCC;
 use FFI::Platypus::Declare qw( opaque );
-use FFI::Platypus::Memory qw( cast );
 
 my $say = closure { print $_[0], "\n" };
 my $ptr = cast '(string)->void' => opaque => $say;
