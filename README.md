@@ -81,11 +81,10 @@ See example below for how to use this to call Perl from Tiny C code.
 It will accept a [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback) at a performance penalty.
 If possible pass in the pointer to the C entry point instead.
 
-If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus::Memory#cast](https://metacpan.org/pod/FFI::Platypus::Memory#cast)
-to get a pointer to a closure:
+If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus#cast](https://metacpan.org/pod/FFI::Platypus#cast)
+or [FFI::Platypus::Declare#cast](https://metacpan.org/pod/FFI::Platypus::Declare#cast) to get a pointer to a closure:
 
     use FFI::Platypus::Declare;
-    use FFI::Platypus::Memory qw( cast );
     my $clousre = closure { return $_[0]+1 };
     my $pointer = cast '(int)->int' => 'opaque', $closure;
     
@@ -220,7 +219,6 @@ Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) inste
 
     use FFI::TinyCC;
     use FFI::Platypus::Declare qw( opaque );
-    use FFI::Platypus::Memory qw( cast );
     
     my $say = closure { print $_[0], "\n" };
     my $ptr = cast '(string)->void' => opaque => $say;

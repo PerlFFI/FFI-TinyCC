@@ -64,7 +64,7 @@ $ffi->lib(
   }
 ));
 
-$ffi->custom_type( opaque => tcc_t => {
+$ffi->custom_type( tcc_t => {
   perl_to_native => sub {
     $_[0]->{handle},
   },
@@ -87,7 +87,8 @@ do {
     obj    3
   );
 
-  $ffi->custom_type( int => output_t => {
+  $ffi->custom_type( output_t => {
+    native_type => 'int',
     perl_to_native => sub { $output_type{$_[0]} },
   });
 };
