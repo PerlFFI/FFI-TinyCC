@@ -46,6 +46,7 @@ to create bindings instead of XS.
 =cut
 
 my $ffi = FFI::Platypus->new;
+$ffi->load_custom_type( 'StringArray' => 'string_array' );
 
 # TODO: support platypus types like pointers and arrays
 my %typemap = (
@@ -88,13 +89,9 @@ sub _generate_sub ($$$)
   && $func->{arg_types}->[0] eq 'int'
   && $func->{arg_types}->[1] =~ /^(const |)char \*\*$/)
   {
-    my $f = $ffi->function($address => ['int','opaque'] => _typemap $func->{return_type});
+    my $f = $ffi->function($address => ['int','string_array'] => _typemap $func->{return_type});
     $sub = sub {
-      my $argc = scalar @_;
-      my @c_strings = map { "$_\0" } @_;
-      my $ptrs = pack 'P' x $argc, @c_strings;
-      my $argv = unpack 'L!', pack 'P', $ptrs;
-      $f->call($argc, $argv);
+      $f->call(scalar @_, \@_);
     };
   }
   else

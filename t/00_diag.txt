@@ -1,6 +1,7 @@
 Alien::TinyCC
 Archive::Ar
 FFI::Platypus
+FFI::Platypus::Type::StringArray
 FFI::Raw
 File::ShareDir
 File::chdir
