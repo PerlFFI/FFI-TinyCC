@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.15      2015-01-23 17:03:42 -0500
   - use FFI::Platypus::Type::StringArray instead of reinventing it ourselves
 
 0.14      2015-01-22 06:38:34 -0500
