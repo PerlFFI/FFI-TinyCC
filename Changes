@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.16      2015-01-25 03:58:01 -0500
   - FFI::TinyCC::Inline options is not supported on Perl 5.8
     a useful diagnostic will be printed if you try to use it on 5.8
     tests that test options will skip on 5.8
