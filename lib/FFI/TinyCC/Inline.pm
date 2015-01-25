@@ -105,6 +105,8 @@ sub _generate_sub ($$$)
 
 =head1 OPTIONS
 
+[requires Perl 5.10.0 or better]
+
 You can specify Tiny C options using the scoped pragmata, like so:
 
  use FFI::TinyCC::Inline options => "-I/foo/include -L/foo/lib -DFOO=1";
@@ -127,8 +129,15 @@ sub import
   if(defined $rest[0] && defined $rest[1]
   && $rest[0] eq 'options')
   {
-    shift @rest;
-    $^H{"FFI::TinyCC::Inline/options"} = shift @rest;
+    if($] >= 5.010)
+    {
+      shift @rest;
+      $^H{"FFI::TinyCC::Inline/options"} = shift @rest;
+    }
+    else
+    {
+      croak "options not supported on Perl 5.8";
+    }
   }
   
   return unless @rest > 0;

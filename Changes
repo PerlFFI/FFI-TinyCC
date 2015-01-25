@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - FFI::TinyCC::Inline options is not supported on Perl 5.8
+    a useful diagnostic will be printed if you try to use it on 5.8
+    tests that test options will skip on 5.8
 
 0.15      2015-01-23 17:03:42 -0500
   - use FFI::Platypus::Type::StringArray instead of reinventing it ourselves
