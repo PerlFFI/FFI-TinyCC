@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.17      2015-01-27 21:47:45 -0500
   - Update FFI::Platypus syntax in examples and documentation
     A couple of places were using conventions that were removed
     from Platypus before it went to CPAN.
