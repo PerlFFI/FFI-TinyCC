@@ -440,7 +440,8 @@ This method is deprecated, and will be removed from a future version of
 L<FFI::TinyCC>, but not before January 31, 2017.  It will issue a 
 warning if you try to use it.  Instead of this:
 
- my $function = $ffi->get_ffi_raw($name, $ret, @args);
+ my $function = $ffi->get_ffi_raw($name, FFI::void);
+ $function->();
 
 Do this:
 
