@@ -186,17 +186,22 @@ Given the name of a function, return an [FFI::Raw](https://metacpan.org/pod/FFI:
 allow you to call it from Perl.
 
 This method is deprecated, and will be removed from a future version of 
-[FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC).  It will issue a warning if you try to use it.  Instead 
-of this:
+[FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC), but not before January 31, 2017.  It will issue a 
+warning if you try to use it.  Instead of this:
 
     my $function = $ffi->get_ffi_raw($name, $ret, @args);
 
 Do this:
 
     use FFI::Raw;
-    my $function = FFI::Raw->new_from_ptr($ffi->get_symbol($name), $ret, @args);
+    my $function = FFI::Raw->new_from_ptr($ffi->get_symbol($name), FFI::void);
+    $function->();
 
-Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instead.
+Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instead:
+
+    use FFI::Platypus::Declare;
+    attach [$ffi->get_symbol($name) => 'function'] => [] => 'void';
+    function();
 
 # EXAMPLES
 
