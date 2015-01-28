@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Update FFI::Platypus syntax in examples and documentation
+    A couple of places were using conventions that were removed
+    from Platypus before it went to CPAN.
 
 0.16      2015-01-25 03:58:01 -0500
   - FFI::TinyCC::Inline options is not supported on Perl 5.8

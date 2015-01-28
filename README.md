@@ -18,7 +18,7 @@ Tiny C Compiler for FFI
     });
     
     my $address = $tcc->get_symbol('find_square');
-    function [$address => 'find_square'] => [int] => int;
+    attach [$address => 'find_square'] => [int] => int;
     
     print find_square(4), "\n"; # prints 16
 
@@ -264,7 +264,7 @@ Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) inste
     
     my $address = $tcc->get_symbol('calculate_square');
     
-    function [$address => 'square'] => [int] => int;
+    attach [$address => 'square'] => [int] => int;
     
     print square($value), "\n";
 

@@ -27,7 +27,7 @@ use File::ShareDir ();
  });
  
  my $address = $tcc->get_symbol('find_square');
- function [$address => 'find_square'] => [int] => int;
+ attach [$address => 'find_square'] => [int] => int;
  
  print find_square(4), "\n"; # prints 16
 

@@ -18,6 +18,6 @@ $value = 4 unless defined $value;
 
 my $address = $tcc->get_symbol('calculate_square');
 
-function [$address => 'square'] => [int] => int;
+attach [$address => 'square'] => [int] => int;
 
 print square($value), "\n";
