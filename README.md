@@ -24,10 +24,10 @@ Tiny C Compiler for FFI
 
 # DESCRIPTION
 
-This module provides an interface to a very small C compiler known as
-TinyCC.  It does almost no optimizations, so `gcc` or `clang` will
-probably generate faster code, but it is very small and is very fast
-and thus may be useful for some Just In Time (JIT) or Foreign Function
+This module provides an interface to a very small C compiler known as 
+TinyCC.  It does almost no optimizations, so `gcc` or `clang` will 
+probably generate faster code, but it is very small and is very fast and 
+thus may be useful for some Just In Time (JIT) or Foreign Function 
 Interface (FFI) situations.
 
 For a simpler, but less powerful interface see [FFI::TinyCC::Inline](https://metacpan.org/pod/FFI::TinyCC::Inline).
@@ -50,7 +50,8 @@ Methods will generally throw an exception on failure.
 
     $tcc->set_options($options);
 
-Set compiler and linker options, as you would on the command line, for example:
+Set compiler and linker options, as you would on the command line, for 
+example:
 
     $tcc->set_options('-I/foo/include -L/foo/lib -DFOO=22');
 
@@ -75,14 +76,14 @@ Compile a string containing C source code.
     $tcc->add_symbol($name, $callback);
     $tcc->add_symbol($name, $pointer);
 
-Add the given given symbol name / callback or pointer combination.
-See example below for how to use this to call Perl from Tiny C code.
+Add the given given symbol name / callback or pointer combination. See 
+example below for how to use this to call Perl from Tiny C code.
 
-It will accept a [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback) at a performance penalty.
-If possible pass in the pointer to the C entry point instead.
+It will accept a [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback) at a performance penalty. If 
+possible pass in the pointer to the C entry point instead.
 
-If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus#cast](https://metacpan.org/pod/FFI::Platypus#cast)
-or [FFI::Platypus::Declare#cast](https://metacpan.org/pod/FFI::Platypus::Declare#cast) to get a pointer to a closure:
+If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus#cast](https://metacpan.org/pod/FFI::Platypus#cast) or 
+[FFI::Platypus::Declare#cast](https://metacpan.org/pod/FFI::Platypus::Declare#cast) to get a pointer to a closure:
 
     use FFI::Platypus::Declare;
     my $clousre = closure { return $_[0]+1 };
@@ -102,7 +103,8 @@ Add the given path to the list of paths used to search for include files.
 
     $tcc->add_sysinclude_path($path);
 
-Add the given path to the list of paths used to search for system include files.
+Add the given path to the list of paths used to search for system 
+include files.
 
 ### set\_lib\_path
 
@@ -161,18 +163,18 @@ Add the given directory to the search path used to find libraries.
 
     my $pointer = $tcc->get_symbol($symbol_name);
 
-Return symbol address or undef if not found.  This can be passed into
-the [FFI::Platypus#function](https://metacpan.org/pod/FFI::Platypus#function) method, [FFI::Platypus#attach](https://metacpan.org/pod/FFI::Platypus#attach) method,
-[FFI::Platypus::Declare#function](https://metacpan.org/pod/FFI::Platypus::Declare#function) function or similar interface that
+Return symbol address or undef if not found.  This can be passed into 
+the [FFI::Platypus#function](https://metacpan.org/pod/FFI::Platypus#function) method, [FFI::Platypus#attach](https://metacpan.org/pod/FFI::Platypus#attach) method, 
+[FFI::Platypus::Declare#function](https://metacpan.org/pod/FFI::Platypus::Declare#function) function or similar interface that 
 takes a pointer to a C function.
 
 ### output\_file
 
     $tcc->output_file($filename);
 
-Output the generated code (either executable, object or DLL) to the given filename.
-The type of output is specified by the [set\_output\_type](https://metacpan.org/pod/FFI::TinyCC#set_output_type)
-method.
+Output the generated code (either executable, object or DLL) to the 
+given filename. The type of output is specified by the 
+[set\_output\_type](#set_output_type) method.
 
 ### get\_ffi\_raw
 
@@ -180,10 +182,11 @@ method.
 
     my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
 
-Given the name of a function, return an [FFI::Raw](https://metacpan.org/pod/FFI::Raw) instance that will allow you to call it from Perl.
+Given the name of a function, return an [FFI::Raw](https://metacpan.org/pod/FFI::Raw) instance that will 
+allow you to call it from Perl.
 
-This method is deprecated, and will be removed from a future version of
-[FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC).  It will issue a warning if you try to use it.  Instead
+This method is deprecated, and will be removed from a future version of 
+[FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC).  It will issue a warning if you try to use it.  Instead 
 of this:
 
     my $function = $ffi->get_ffi_raw($name, $ret, @args);
@@ -270,11 +273,12 @@ Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) inste
 
 # CAVEATS
 
-Tiny C is only supported on platforms with ARM or Intel processors.  All features may not be fully supported on
-all operating systems.
+Tiny C is only supported on platforms with ARM or Intel processors.  All 
+features may not be fully supported on all operating systems.
 
-Tiny C is no longer supported by its original author, though various forks seem to have varying levels of support.
-We use the fork that comes with [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC).
+Tiny C is no longer supported by its original author, though various 
+forks seem to have varying levels of support. We use the fork that comes 
+with [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC).
 
 # SEE ALSO
 
@@ -287,9 +291,9 @@ We use the fork that comes with [Alien::TinyCC](https://metacpan.org/pod/Alien::
 
 # BUNDLED SOFTWARE
 
-This package also comes with a parser that was shamelessly stolen from [XS::TCC](https://metacpan.org/pod/XS::TCC),
-which I strongly suspect was itself shamelessly "borrowed" from 
-[Inline::C::Parser::RegExp](https://metacpan.org/pod/Inline::C::Parser::RegExp)
+This package also comes with a parser that was shamelessly stolen from 
+[XS::TCC](https://metacpan.org/pod/XS::TCC), which I strongly suspect was itself shamelessly "borrowed" 
+from [Inline::C::Parser::RegExp](https://metacpan.org/pod/Inline::C::Parser::RegExp)
 
 The license details for the parser are:
 
@@ -297,7 +301,8 @@ Copyright 2002 Brian Ingerson
 Copyright 2008, 2010-2012 Sisyphus
 Copyright 2013 Steffen Muellero
 
-This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify it 
+under the same terms as Perl itself.
 
 # AUTHOR
 

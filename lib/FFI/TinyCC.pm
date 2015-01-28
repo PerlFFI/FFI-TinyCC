@@ -33,10 +33,10 @@ use File::ShareDir ();
 
 =head1 DESCRIPTION
 
-This module provides an interface to a very small C compiler known as
-TinyCC.  It does almost no optimizations, so C<gcc> or C<clang> will
-probably generate faster code, but it is very small and is very fast
-and thus may be useful for some Just In Time (JIT) or Foreign Function
+This module provides an interface to a very small C compiler known as 
+TinyCC.  It does almost no optimizations, so C<gcc> or C<clang> will 
+probably generate faster code, but it is very small and is very fast and 
+thus may be useful for some Just In Time (JIT) or Foreign Function 
 Interface (FFI) situations.
 
 For a simpler, but less powerful interface see L<FFI::TinyCC::Inline>.
@@ -194,7 +194,8 @@ Methods will generally throw an exception on failure.
 
  $tcc->set_options($options);
 
-Set compiler and linker options, as you would on the command line, for example:
+Set compiler and linker options, as you would on the command line, for 
+example:
 
  $tcc->set_options('-I/foo/include -L/foo/lib -DFOO=22');
 
@@ -231,14 +232,14 @@ _method compile_string => qw( string );
  $tcc->add_symbol($name, $callback);
  $tcc->add_symbol($name, $pointer);
 
-Add the given given symbol name / callback or pointer combination.
-See example below for how to use this to call Perl from Tiny C code.
+Add the given given symbol name / callback or pointer combination. See 
+example below for how to use this to call Perl from Tiny C code.
 
-It will accept a L<FFI::Raw::Callback> at a performance penalty.
-If possible pass in the pointer to the C entry point instead.
+It will accept a L<FFI::Raw::Callback> at a performance penalty. If 
+possible pass in the pointer to the C entry point instead.
 
-If you are using L<FFI::Platypus> you can use L<FFI::Platypus#cast>
-or L<FFI::Platypus::Declare#cast> to get a pointer to a closure:
+If you are using L<FFI::Platypus> you can use L<FFI::Platypus#cast> or 
+L<FFI::Platypus::Declare#cast> to get a pointer to a closure:
 
  use FFI::Platypus::Declare;
  my $clousre = closure { return $_[0]+1 };
@@ -286,7 +287,8 @@ _method add_include_path => qw( string );
 
  $tcc->add_sysinclude_path($path);
 
-Add the given path to the list of paths used to search for system include files.
+Add the given path to the list of paths used to search for system 
+include files.
 
 =cut
 
@@ -391,9 +393,9 @@ sub run
 
  my $pointer = $tcc->get_symbol($symbol_name);
 
-Return symbol address or undef if not found.  This can be passed into
-the L<FFI::Platypus#function> method, L<FFI::Platypus#attach> method,
-L<FFI::Platypus::Declare#function> function or similar interface that
+Return symbol address or undef if not found.  This can be passed into 
+the L<FFI::Platypus#function> method, L<FFI::Platypus#attach> method, 
+L<FFI::Platypus::Declare#function> function or similar interface that 
 takes a pointer to a C function.
 
 =cut
@@ -417,9 +419,9 @@ sub get_symbol
 
  $tcc->output_file($filename);
 
-Output the generated code (either executable, object or DLL) to the given filename.
-The type of output is specified by the L<set_output_type|FFI::TinyCC#set_output_type>
-method.
+Output the generated code (either executable, object or DLL) to the 
+given filename. The type of output is specified by the 
+L<set_output_type|/set_output_type> method.
 
 =cut
 
@@ -431,10 +433,11 @@ B<DEPRECATED>
 
  my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
 
-Given the name of a function, return an L<FFI::Raw> instance that will allow you to call it from Perl.
+Given the name of a function, return an L<FFI::Raw> instance that will 
+allow you to call it from Perl.
 
-This method is deprecated, and will be removed from a future version of
-L<FFI::TinyCC>.  It will issue a warning if you try to use it.  Instead
+This method is deprecated, and will be removed from a future version of 
+L<FFI::TinyCC>.  It will issue a warning if you try to use it.  Instead 
 of this:
 
  my $function = $ffi->get_ffi_raw($name, $ret, @args);
@@ -536,11 +539,12 @@ sub as_string
 
 =head1 CAVEATS
 
-Tiny C is only supported on platforms with ARM or Intel processors.  All features may not be fully supported on
-all operating systems.
+Tiny C is only supported on platforms with ARM or Intel processors.  All 
+features may not be fully supported on all operating systems.
 
-Tiny C is no longer supported by its original author, though various forks seem to have varying levels of support.
-We use the fork that comes with L<Alien::TinyCC>.
+Tiny C is no longer supported by its original author, though various 
+forks seem to have varying levels of support. We use the fork that comes 
+with L<Alien::TinyCC>.
 
 =head1 SEE ALSO
 
@@ -562,9 +566,9 @@ We use the fork that comes with L<Alien::TinyCC>.
 
 =head1 BUNDLED SOFTWARE
 
-This package also comes with a parser that was shamelessly stolen from L<XS::TCC>,
-which I strongly suspect was itself shamelessly "borrowed" from 
-L<Inline::C::Parser::RegExp>
+This package also comes with a parser that was shamelessly stolen from 
+L<XS::TCC>, which I strongly suspect was itself shamelessly "borrowed" 
+from L<Inline::C::Parser::RegExp>
 
 The license details for the parser are:
 
@@ -572,6 +576,7 @@ Copyright 2002 Brian Ingerson
 Copyright 2008, 2010-2012 Sisyphus
 Copyright 2013 Steffen Muellero
 
-This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify it 
+under the same terms as Perl itself.
 
 =cut
