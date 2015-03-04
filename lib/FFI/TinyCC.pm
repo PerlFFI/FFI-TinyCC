@@ -153,8 +153,13 @@ sub new
   }
   else
   {
-    $self->add_sysinclude_path('/usr/local/include');
-    $self->add_sysinclude_path('/usr/include');
+    require Config;
+    my @paths = map { split ' ', $_ }
+                    $Config::Config{incpath}, $Config::Config{incpth};
+
+    for my $path (@paths) {
+        $self->add_sysinclude_path($path);
+    }
   }
   
   $self->{no_free_store} = 1 if $opt{_no_free_store};
