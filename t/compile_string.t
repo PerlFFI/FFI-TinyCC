@@ -3,7 +3,7 @@ use warnings;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib;
-use Test::More tests => 1;
+use Test::More tests => 2;
 use FFI::TinyCC;
 
 subtest 'basic' => sub {
@@ -16,3 +16,15 @@ subtest 'basic' => sub {
   is $tcc->run, 22, 'tcc.run';
 };
 
+subtest 'system includes' => sub {
+    plan tests => 1;
+    my $tcc = FFI::TinyCC->new;
+
+    eval {
+        $tcc->compile_string(q{
+            #include <stddef.h>
+            #include <errno.h>
+        })
+    };
+    is $@, '', 'tcc.compile_sysinclude_string';
+};
