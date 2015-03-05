@@ -3,6 +3,7 @@ package FFI::TinyCC;
 use strict;
 use warnings;
 use 5.008001;
+use Config;
 use FFI::Platypus;
 use FFI::Platypus::Memory qw( malloc free );
 use Carp qw( croak carp );
@@ -43,11 +44,9 @@ For a simpler, but less powerful interface see L<FFI::TinyCC::Inline>.
 
 =cut
 
-sub _dlext
+sub _dlext ()
 {
-  require Config;
-  # recent strawberry Perl sets dlext to 'xs.dll'
-  $^O eq 'MSWin32' ? 'dll' : $Config::Config{dlext};
+  $^O eq 'MSWin32' ? 'dll' : $Config{dlext};
 }
 
 our $ffi = FFI::Platypus->new;
