@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.17_02   2015-03-10 09:17:52 -0400
+  - Removed unintended linux system include path from detect_sysinclude_path.t
+
 0.17_01   2015-03-10 05:48:35 -0400
   - Added method detect_sysinclude_path, which attempts to find the correct
     sysinclude path for you (so that TinyCC can find things like <stdio.h>)
