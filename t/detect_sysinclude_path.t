@@ -12,8 +12,6 @@ plan skip_all => "detect_sysinclude_path not supported on this platform"
 
 plan tests => 1;
 
-$tcc->add_sysinclude_path('/usr/include/linux');
-
 eval { $tcc->compile_string(q{
 
 #include <stdio.h>
