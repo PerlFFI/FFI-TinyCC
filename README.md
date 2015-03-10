@@ -93,6 +93,16 @@ If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can
 
 ## Preprocessor options
 
+### detect\_sysinclude\_path
+
+\[version 0.18\]
+
+    $tcc->detect_sysinclude_path;
+
+Attempt to find and configure the appropriate system include files. If 
+the platform that you are on does not (yet?) support this functionality 
+then this method will throw an exception.
+
 ### add\_include\_path
 
     $tcc->add_include_path($path);

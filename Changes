@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.17_01   2015-03-10 05:48:35 -0400
+  - Added method detect_sysinclude_path, which attempts to find the correct
+    sysinclude path for you (so that TinyCC can find things like <stdio.h>)
+
 0.17      2015-01-27 21:47:45 -0500
   - Update FFI::Platypus syntax in examples and documentation
     A couple of places were using conventions that were removed
