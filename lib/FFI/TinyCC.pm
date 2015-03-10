@@ -290,7 +290,7 @@ sub detect_sysinclude_path
   if($^O eq 'MSWin32')
   {
     require File::Spec;
-    $self->add_sysinclude_path(File::ShareDir::dist_dir('Alien-TinyCC'), 'include');
+    $self->add_sysinclude_path(File::Spec->catdir(File::ShareDir::dist_dir('Alien-TinyCC'), 'include'));
   }
   elsif($Config{incpth})
   {
