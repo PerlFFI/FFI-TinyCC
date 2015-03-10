@@ -15,6 +15,7 @@ You will need to install these CPAN dists to work on this dist:
  . Path::Class
  . IPC::System::Simple
  . FFI::Platypus
+ . FFI::Platypus::Type::StringArray
 
 (sorry there is no cpanfile)
 
