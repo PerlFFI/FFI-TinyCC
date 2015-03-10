@@ -272,6 +272,61 @@ sub add_symbol
 
 =head2 Preprocessor options
 
+=head3 detect_sysinclude_path
+
+[version 0.18]
+
+ $tcc->detect_sysinclude_path;
+
+Attempt to find and configure the appropriate system include files. If 
+the platform that you are on does not (yet?) support this functionality 
+then this method will throw an exception.
+
+=cut
+
+sub detect_sysinclude_path
+{
+  my($self) = @_;
+  if($^O eq 'MSWin32')
+  {
+    require File::Spec;
+    $self->add_sysinclude_path(File::ShareDir::dist_dir('Alien-TinyCC'), 'include');
+  }
+  elsif($Config{incpth})
+  {
+    require Alien::TinyCC;
+    require File::Spec;
+    $self->add_sysinclude_path(File::Spec->catdir(Alien::TinyCC->libtcc_library_path, qw( tcc include )));
+    $self->add_sysinclude_path($_) for split /\s+/, $Config{incpth};
+  }
+  elsif($Config{ccname} eq 'gcc')
+  {
+    require File::Temp;
+    my($fh, $filename) = File::Temp::tempfile( "tryXXXX", SUFFIX => '.c', UNLINK => 1 );
+    close $fh;
+    
+    my @lines = `$Config{cpp} -v $filename 2>&1`;
+    
+    shift @lines while defined $lines[0] && $lines[0] !~ /^#include </;
+    shift @lines;
+    pop @lines while defined $lines[-1] && $lines[-1] !~ /^End of search /;
+    pop @lines;
+    
+    croak "Cannot detect sysinclude path" unless @lines;
+    
+    require Alien::TinyCC;
+    require File::Spec;
+    $self->add_sysinclude_path(File::Spec->catdir(Alien::TinyCC->libtcc_library_path, qw( tcc include )));
+    
+    $self->add_sysinclude_path($_) for map { chomp; s/^ //; $_ } @lines;
+  }    
+  else
+  {
+    croak "Cannot detect sysinclude path";
+  }
+}
+
+
 =head3 add_include_path
 
  $tcc->add_include_path($path);
