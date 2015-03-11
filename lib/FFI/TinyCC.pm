@@ -498,7 +498,7 @@ sub get_symbol
     my $size = _relocate($self, undef);
     $self->{store} = malloc($size);
     my $r = _relocate($self, $self->{store});
-    FFI::TinyCC::Exception->new($self) if $r == -1;
+    die FFI::TinyCC::Exception->new($self) if $r == -1;
     $self->{relocate} = 1;
   }
   _get_symbol($self, $symbol_name);
