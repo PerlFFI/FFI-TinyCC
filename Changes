@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.19      2015-03-11 09:19:47 -0400
   - detect_sysinclude_path returns the directories added to the system
     include path (suggested by calid++)
 
