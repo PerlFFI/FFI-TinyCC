@@ -32,6 +32,26 @@ use File::ShareDir ();
  
  print find_square(4), "\n"; # prints 16
 
+For code that requires system headers:
+
+ use FFI::TinyCC;
+ use FFI::Platypus::Declare qw( void );
+ 
+ my $tcc = FFI::TinyCC->new;
+ 
+ # this will throw an exception if the system
+ # include paths cannot be detected.
+ $tcc->detect_sysinclude_path;
+ 
+ $tcc->compile_string(q{
+   #include <stdio.h>
+   
+   void print_hello()
+   {
+     puts("hello world");
+   }
+ });
+
 =head1 DESCRIPTION
 
 This module provides an interface to a very small C compiler known as 
@@ -278,26 +298,33 @@ sub add_symbol
 
  $tcc->detect_sysinclude_path;
 
-Attempt to find and configure the appropriate system include files. If 
+Attempt to find and configure the appropriate system include directories. If 
 the platform that you are on does not (yet?) support this functionality 
 then this method will throw an exception.
+
+[version 0.19]
+
+Returns the list of directories added to the system include directories.
 
 =cut
 
 sub detect_sysinclude_path
 {
   my($self) = @_;
+  
+  my @path_list;
+  
   if($^O eq 'MSWin32')
   {
     require File::Spec;
-    $self->add_sysinclude_path(File::Spec->catdir(File::ShareDir::dist_dir('Alien-TinyCC'), 'include'));
+    push @path_list, File::Spec->catdir(File::ShareDir::dist_dir('Alien-TinyCC'), 'include');
   }
   elsif($Config{incpth})
   {
     require Alien::TinyCC;
     require File::Spec;
-    $self->add_sysinclude_path(File::Spec->catdir(Alien::TinyCC->libtcc_library_path, qw( tcc include )));
-    $self->add_sysinclude_path($_) for split /\s+/, $Config{incpth};
+    push @path_list, File::Spec->catdir(Alien::TinyCC->libtcc_library_path, qw( tcc include ));
+    push @path_list, split /\s+/, $Config{incpth};
   }
   elsif($Config{ccname} eq 'gcc')
   {
@@ -316,14 +343,18 @@ sub detect_sysinclude_path
     
     require Alien::TinyCC;
     require File::Spec;
-    $self->add_sysinclude_path(File::Spec->catdir(Alien::TinyCC->libtcc_library_path, qw( tcc include )));
     
-    $self->add_sysinclude_path($_) for map { chomp; s/^ //; $_ } @lines;
+    push @path_list, File::Spec->catdir(Alien::TinyCC->libtcc_library_path, qw( tcc include ));
+    push @path_list, @lines;
   }    
   else
   {
     croak "Cannot detect sysinclude path";
   }
+  
+  $self->add_sysinclude_path($_) for @path_list;
+  
+  @path_list;
 }
 
 

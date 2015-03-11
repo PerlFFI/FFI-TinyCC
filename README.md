@@ -22,6 +22,26 @@ Tiny C Compiler for FFI
     
     print find_square(4), "\n"; # prints 16
 
+For code that requires system headers:
+
+    use FFI::TinyCC;
+    use FFI::Platypus::Declare qw( void );
+    
+    my $tcc = FFI::TinyCC->new;
+    
+    # this will throw an exception if the system
+    # include paths cannot be detected.
+    $tcc->detect_sysinclude_path;
+    
+    $tcc->compile_string(q{
+      #include <stdio.h>
+      
+      void print_hello()
+      {
+        puts("hello world");
+      }
+    });
+
 # DESCRIPTION
 
 This module provides an interface to a very small C compiler known as 
@@ -99,9 +119,13 @@ If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can
 
     $tcc->detect_sysinclude_path;
 
-Attempt to find and configure the appropriate system include files. If 
+Attempt to find and configure the appropriate system include directories. If 
 the platform that you are on does not (yet?) support this functionality 
 then this method will throw an exception.
+
+\[version 0.19\]
+
+Returns the list of directories added to the system include directories.
 
 ### add\_include\_path
 

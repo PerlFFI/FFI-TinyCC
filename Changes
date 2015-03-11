@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - detect_sysinclude_path returns the directories added to the system
+    include path (suggested by calid++)
 
 0.18      2015-03-11 06:44:56 -0400
   - Production release identical to 0.17_02
