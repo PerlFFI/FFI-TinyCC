@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix bug in detect_sysinclude_path on Perl 5.18 and earlier introduced
+    in 0.19
 
 0.19      2015-03-11 09:19:47 -0400
   - detect_sysinclude_path returns the directories added to the system

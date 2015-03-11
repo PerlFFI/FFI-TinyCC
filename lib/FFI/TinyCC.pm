@@ -349,7 +349,7 @@ sub detect_sysinclude_path
     require File::Spec;
     
     push @path_list, File::Spec->catdir(Alien::TinyCC->libtcc_library_path, qw( tcc include ));
-    push @path_list, @lines;
+    push @path_list, map { chomp; s/^ //; $_ } @lines;
   }    
   else
   {
