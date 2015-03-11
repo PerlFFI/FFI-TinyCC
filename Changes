@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.18      2015-03-11 06:44:56 -0400
+  - Production release identical to 0.17_02
+
 0.17_02   2015-03-10 09:17:52 -0400
   - Removed unintended linux system include path from detect_sysinclude_path.t
 
