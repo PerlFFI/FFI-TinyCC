@@ -41,6 +41,10 @@ For code that requires system headers:
         puts("hello world");
       }
     });
+    
+    my $address = $tcc->get_symbol('print_hello');
+    attach [$address => 'print_hello'] => [] => void;
+    print_hello();
 
 # DESCRIPTION
 
