@@ -8,6 +8,7 @@ use FFI::Platypus;
 use FFI::Platypus::Memory qw( malloc free );
 use Carp qw( croak carp );
 use File::ShareDir ();
+use Alien::TinyCC;
 
 # ABSTRACT: Tiny C Compiler for FFI
 # VERSION
@@ -138,6 +139,9 @@ sub new
     push @{ $self->{error} }, $_[1];
   });
   _set_error_func($self, undef, $self->{error_cb});
+
+  $self->add_sysinclude_path(Alien::TinyCC->libtcc_include_path);
+  $self->add_sysinclude_path(Alien::TinyCC->libtcc_library_path.'/tcc/include');
   
   if($^O eq 'MSWin32')
   {
@@ -145,6 +149,16 @@ sub new
     require File::Spec;
     my $path = File::Spec->catdir(File::Basename::dirname($ffi->lib), 'lib');
     $self->add_library_path($path);
+  }
+  else
+  {
+    require Config;
+    my @paths = map { split ' ', $_ }
+                    $Config::Config{incpath}, $Config::Config{incpth};
+
+    for my $path (@paths) {
+        $self->add_sysinclude_path($path);
+    }
   }
   
   $self->{no_free_store} = 1 if $opt{_no_free_store};
