@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix bug where get_symbol method was not correctly throwing an exception
+    on error (gh#4 pipcet++
 
 0.20      2015-03-11 12:57:12 -0400
   - Fix bug in detect_sysinclude_path on Perl 5.18 and earlier introduced
@@ -8,7 +10,7 @@ Revision history for {{$dist->name}}
 
 0.19      2015-03-11 09:19:47 -0400
   - detect_sysinclude_path returns the directories added to the system
-    include path (suggested by calid++)
+    include path (gh#3 suggested by calid++)
 
 0.18      2015-03-11 06:44:56 -0400
   - Production release identical to 0.17_02

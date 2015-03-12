@@ -350,7 +350,15 @@ under the same terms as Perl itself.
 
 # AUTHOR
 
-Graham Ollis <plicease@cpan.org>
+Author: Graham Ollis <plicease@cpan.org>
+
+Contributors:
+
+aero
+
+Dylan Cali (calid)
+
+pipcet
 
 # COPYRIGHT AND LICENSE
 
