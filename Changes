@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.21      2015-03-11 22:24:12 -0400
   - Fix bug where get_symbol method was not correctly throwing an exception
     on error (gh#4 pipcet++
 
