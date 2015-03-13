@@ -356,6 +356,8 @@ sub detect_sysinclude_path
     croak "Cannot detect sysinclude path";
   }
   
+  croak "Cannot detect sysinclude path" unless grep { -d $_ } @path_list;
+  
   $self->add_sysinclude_path($_) for @path_list;
   
   @path_list;
