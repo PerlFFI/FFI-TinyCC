@@ -227,19 +227,19 @@ This method is deprecated, and will be removed from a future version of
 [FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC), but not before January 31, 2017.  It will issue a 
 warning if you try to use it.  Instead of this:
 
-    my $function = $ffi->get_ffi_raw($name, FFI::void);
+    my $function = $tcc->get_ffi_raw($name, FFI::void);
     $function->();
 
 Do this:
 
     use FFI::Raw;
-    my $function = FFI::Raw->new_from_ptr($ffi->get_symbol($name), FFI::void);
+    my $function = FFI::Raw->new_from_ptr($tcc->get_symbol($name), FFI::void);
     $function->();
 
 Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instead:
 
     use FFI::Platypus::Declare;
-    attach [$ffi->get_symbol($name) => 'function'] => [] => 'void';
+    attach [$tcc->get_symbol($name) => 'function'] => [] => 'void';
     function();
 
 # EXAMPLES
