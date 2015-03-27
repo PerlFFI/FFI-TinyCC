@@ -32,7 +32,7 @@ Take a look at the share directory you should have a libtcc.so or
 libtcc.dll now.  If you have to switch architectures with the same 
 repository, you can clean up with this incantation:
 
- % perl -Iinc -MMy:DLL -E tcc_clean
+ % perl -Iinc -MMy::DLL -E tcc_clean
 
 Now that you have the dynamic library that FFI::TinyCC needs, you can 
 run the test suite by using prove and its -l option:
