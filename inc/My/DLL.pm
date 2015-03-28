@@ -14,7 +14,7 @@ use File::Copy qw( copy );
 use Path::Class::File ();
 use File::chdir;
 
-our @EXPORT = qw( tcc_clean tcc_build );
+our @EXPORT = qw( tcc_clean tcc_build tcc_name );
 
 my $share = Path::Class::File
   ->new(dirname $INC{'My/DLL.pm'})
@@ -59,7 +59,7 @@ sub tcc_build
   {
     do {
       my $from = $libdir->file('libtcc.dll');
-      my $to   = $share->file('libtcc.dll');
+      my $to   = tcc_name();
       print $log "copy $from => $to", "\n";
       copy($from => $to)
       || die "unable to copy $from => $to $!";
@@ -102,13 +102,18 @@ sub tcc_build
     my @obj = grep /\.(o|obj)$/, $tmp->children;
     print $log "obj = $_", "\n" for @obj;
 
-    my @cmd = ($Config{cc}, '-o' => $share->file("libtcc.$Config{dlext}"), '-shared', @obj);
+    my @cmd = ($Config{cc}, '-o' => tcc_name(), '-shared', @obj);
     print $log "+ @cmd\n";
 
     print "+ @cmd\n";
     system @cmd;
     die if $?;
   }
+}
+
+sub tcc_name
+{
+  $^O eq 'MSWin32' ? $share->file('libtcc.dll') : $share->file("libtcc.$Config{dlext}");
 }
 
 1;

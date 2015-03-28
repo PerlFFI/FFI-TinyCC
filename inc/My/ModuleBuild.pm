@@ -11,8 +11,6 @@ sub new
 {
   my($class, %args) = @_;
 
-  tcc_build();
-
   if(defined ${^GLOBAL_PHASE})
   {
     print "You have a working \${^GLOBAL_PHASE}\n";
@@ -30,6 +28,20 @@ sub new
   $self->add_to_cleanup('share/build.log');
   
   $self;
+}
+
+sub ACTION_build
+{
+  my $self = shift;
+  tcc_build() unless -e tcc_name();
+  $self->SUPER::ACTION_build(@_)
+}
+
+sub ACTION_clean
+{
+  my $self = shift;
+  tcc_clean();
+  $self->SUPER::ACTION_clean(@_);
 }
 
 1;
