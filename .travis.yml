@@ -1,5 +1,7 @@
 language: perl
 
+sudo: false
+
 # remember need at least one install command, even if there are no
 # prereqs, else travis will try to install deps using cpanm
 # which is not what we want since this is a Dist::Zilla dist.
