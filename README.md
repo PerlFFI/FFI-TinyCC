@@ -330,6 +330,7 @@ with [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC).
 - [Tiny C](http://bellard.org/tcc/)
 - [Tiny C Compiler Reference Documentation](http://bellard.org/tcc/tcc-doc.html)
 - [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus)
+- [C::Blocks](https://metacpan.org/pod/C::Blocks)
 - [Alien::TinyCC](https://metacpan.org/pod/Alien::TinyCC)
 - [C::TinyCompiler](https://metacpan.org/pod/C::TinyCompiler)
 

@@ -655,6 +655,8 @@ with L<Alien::TinyCC>.
 
 =item L<FFI::Platypus>
 
+=item L<C::Blocks>
+
 =item L<Alien::TinyCC>
 
 =item L<C::TinyCompiler>

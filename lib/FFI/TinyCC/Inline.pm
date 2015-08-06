@@ -409,6 +409,8 @@ RESYNC:  # Skip the rest of the current line, and continue.
 
 =item L<FFI::TinyCC>
 
+=item L<C::Blocks>
+
 =back
 
 =head1 BUNDLED SOFTWARE
