@@ -2,6 +2,11 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
   - Refinement of detect_sysinclude_path
+  - libtcc.so is built during the build stage instead of the configure
+    stage during dist install
+  - Numerous small but important documentation corrections
+  - Add link to #native irc channel in dist meta data
+    (join us for Alien and FFI discussions)
 
 0.21      2015-03-11 22:24:12 -0400
   - Fix bug where get_symbol method was not correctly throwing an exception
