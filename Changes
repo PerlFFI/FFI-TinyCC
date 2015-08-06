@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.22      2015-08-06 09:37:59 -0400
   - Refinement of detect_sysinclude_path
   - libtcc.so is built during the build stage instead of the configure
     stage during dist install
