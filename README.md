@@ -351,7 +351,7 @@ under the same terms as Perl itself.
 
 # AUTHOR
 
-Author: Graham Ollis <plicease@cpan.org>
+Author: Graham Ollis &lt;plicease@cpan.org>
 
 Contributors:
 
