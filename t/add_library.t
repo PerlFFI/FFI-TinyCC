@@ -1,8 +1,6 @@
 use strict;
 use warnings;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib;
+use FindBin;
 use Test::More tests => 2;
 use FFI::TinyCC;
 use File::chdir;

@@ -1,8 +1,6 @@
 use strict;
 use warnings;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib;
+use FindBin;
 use Test::More tests => 3;
 use FFI::TinyCC;
 use Path::Class qw( file dir );

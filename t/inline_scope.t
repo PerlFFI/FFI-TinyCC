@@ -1,8 +1,5 @@
 use strict;
 use warnings;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib;
 use if $] < 5.010, 'Test::More', skip_all => 'eval requires Perl 5.10 or better';
 use Test::More tests => 3;
 use FFI::TinyCC::Inline qw( tcc_inline );

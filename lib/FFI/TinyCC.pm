@@ -75,17 +75,10 @@ sub _dlext ()
 
 our $ffi = FFI::Platypus->new;
 $ffi->lib(
-  $ENV{FFI_TINYCC_LIBTCC_SO} || (eval { File::ShareDir::dist_dir('FFI-TinyCC') } ? File::ShareDir::dist_file('FFI-TinyCC', "libtcc." . _dlext) : do {
-    require Path::Class::File;
-    Path::Class::File
-      ->new($INC{'FFI/TinyCC.pm'})
-      ->dir
-      ->parent
-      ->parent
-      ->file('share', 'libtcc.' . _dlext)
-      ->stringify
-  }
-));
+  do { $_ = __FILE__; s{TinyCC.pm}{.TinyCC.devshare}; -e $_ } 
+    ? ( 'share/libtcc.' . _dlext ) 
+    : File::ShareDir::dist_file('FFI-TinyCC', 'libtcc.' . _dlext),
+);
 
 $ffi->custom_type( tcc_t => {
   perl_to_native => sub {

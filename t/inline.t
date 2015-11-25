@@ -1,8 +1,5 @@
 use strict;
 use warnings;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib;
 use Test::More tests => 15;
 use FFI::TinyCC::Inline qw( tcc_inline );
 

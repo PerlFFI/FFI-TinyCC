@@ -1,8 +1,6 @@
 use strict;
 use warnings;
 use FindBin ();
-use lib $FindBin::Bin;
-use testlib;
 use Test::More tests => 1;
 use File::ShareDir qw( dist_dir );
 use Path::Class qw( dir );

@@ -1,8 +1,5 @@
 use strict;
 use warnings;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib;
 use Test::More tests => 3;
 use FFI::TinyCC;
 use FFI::Platypus::Declare qw( int );
