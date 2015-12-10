@@ -1,4 +1,4 @@
-# FFI::TinyCC
+# FFI::TinyCC [![Build Status](https://secure.travis-ci.org/plicease/FFI-TinyCC.png)](http://travis-ci.org/plicease/FFI-TinyCC)
 
 Tiny C Compiler for FFI
 
