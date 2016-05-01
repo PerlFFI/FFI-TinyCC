@@ -7,7 +7,6 @@ install:
   - dzil listdeps --missing | cpanm -n
 
 perl:
-  - "5.8"
   - "5.10"
   - "5.12"
   - "5.14"
