@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 use FFI::TinyCC;
-use FFI::Platypus::Declare qw( opaque );
+use FFI::Platypus;
 
-my $say = closure { print $_[0], "\n" };
-my $ptr = cast '(string)->void' => opaque => $say;
+my $ffi = FFI::Platypus->new;
+my $say = $ffi->closure(sub { print $_[0], "\n" });
+my $ptr = $ffi->cast('(string)->void' => 'opaque' => $say);
 
 my $tcc = FFI::TinyCC->new;
 $tcc->add_symbol(say => $ptr);

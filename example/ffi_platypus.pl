@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FFI::TinyCC;
-use FFI::Platypus::Declare qw( int );
+use FFI::Platypus;
 
 my $tcc = FFI::TinyCC->new;
 
@@ -18,6 +18,7 @@ $value = 4 unless defined $value;
 
 my $address = $tcc->get_symbol('calculate_square');
 
-attach [$address => 'square'] => [int] => int;
+my $ffi = FFI::Platypus->new;
+$ffi->attach([$address => 'square'] => ['int'] => 'int');
 
 print square($value), "\n";

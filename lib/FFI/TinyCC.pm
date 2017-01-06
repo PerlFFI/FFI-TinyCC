@@ -14,7 +14,7 @@ use Carp qw( croak carp );
 =head1 SYNOPSIS
 
  use FFI::TinyCC;
- use FFI::Platypus::Declare qw( int );
+ use FFI::Platypus;
  
  my $tcc = FFI::TinyCC->new;
  
@@ -27,14 +27,15 @@ use Carp qw( croak carp );
  });
  
  my $address = $tcc->get_symbol('find_square');
- attach [$address => 'find_square'] => [int] => int;
+ my $ffi = FFI::Platypus->new;
+ $ffi->attach([$address => 'find_square'] => ['int'] => 'int');
  
  print find_square(4), "\n"; # prints 16
 
 For code that requires system headers:
 
  use FFI::TinyCC;
- use FFI::Platypus::Declare qw( void );
+ use FFI::Platypus;
  
  my $tcc = FFI::TinyCC->new;
  
@@ -52,7 +53,8 @@ For code that requires system headers:
  });
  
  my $address = $tcc->get_symbol('print_hello');
- attach [$address => 'print_hello'] => [] => void;
+ my $ffi = FFI::Platypus->new;
+ $ffi->attach([$address => 'print_hello'] => [] => 'void');
  print_hello();
 
 =head1 DESCRIPTION
@@ -253,12 +255,13 @@ example below for how to use this to call Perl from Tiny C code.
 It will accept a L<FFI::Raw::Callback> at a performance penalty. If 
 possible pass in the pointer to the C entry point instead.
 
-If you are using L<FFI::Platypus> you can use L<FFI::Platypus#cast> or 
-L<FFI::Platypus::Declare#cast> to get a pointer to a closure:
+If you are using L<FFI::Platypus> you can use L<FFI::Platypus#cast>
+to get a pointer to a closure:
 
- use FFI::Platypus::Declare;
- my $clousre = closure { return $_[0]+1 };
- my $pointer = cast '(int)->int' => 'opaque', $closure;
+ use FFI::Platypus;
+ my $ffi = FFI::Platypus;
+ my $closure = $ffi->closure(sub { return $_[0]+1 });
+ my $pointer = $ffi->cast('(int)->int' => 'opaque', $closure);
  
  $tcc->add_symbol('foo' => $pointer);
 
@@ -478,8 +481,7 @@ sub run
 
 Return symbol address or undef if not found.  This can be passed into 
 the L<FFI::Platypus#function> method, L<FFI::Platypus#attach> method, 
-L<FFI::Platypus::Declare#function> function or similar interface that 
-takes a pointer to a C function.
+or similar interface that takes a pointer to a C function.
 
 =cut
 
@@ -534,8 +536,9 @@ Do this:
 
 Or better yet, use L<FFI::Platypus> instead:
 
- use FFI::Platypus::Declare;
- attach [$tcc->get_symbol($name) => 'function'] => [] => 'void';
+ use FFI::Platypus;
+ my $ffi = FFI::Platypus->new;
+ $ffi->attach([$tcc->get_symbol($name) => 'function'] => [] => 'void');
  function();
 
 =cut

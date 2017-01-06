@@ -5,7 +5,7 @@ Tiny C Compiler for FFI
 # SYNOPSIS
 
     use FFI::TinyCC;
-    use FFI::Platypus::Declare qw( int );
+    use FFI::Platypus;
     
     my $tcc = FFI::TinyCC->new;
     
@@ -18,14 +18,15 @@ Tiny C Compiler for FFI
     });
     
     my $address = $tcc->get_symbol('find_square');
-    attach [$address => 'find_square'] => [int] => int;
+    my $ffi = FFI::Platypus->new;
+    $ffi->attach([$address => 'find_square'] => ['int'] => 'int');
     
     print find_square(4), "\n"; # prints 16
 
 For code that requires system headers:
 
     use FFI::TinyCC;
-    use FFI::Platypus::Declare qw( void );
+    use FFI::Platypus;
     
     my $tcc = FFI::TinyCC->new;
     
@@ -43,7 +44,8 @@ For code that requires system headers:
     });
     
     my $address = $tcc->get_symbol('print_hello');
-    attach [$address => 'print_hello'] => [] => void;
+    my $ffi = FFI::Platypus->new;
+    $ffi->attach([$address => 'print_hello'] => [] => 'void');
     print_hello();
 
 # DESCRIPTION
@@ -106,12 +108,13 @@ example below for how to use this to call Perl from Tiny C code.
 It will accept a [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback) at a performance penalty. If 
 possible pass in the pointer to the C entry point instead.
 
-If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus#cast](https://metacpan.org/pod/FFI::Platypus#cast) or 
-[FFI::Platypus::Declare#cast](https://metacpan.org/pod/FFI::Platypus::Declare#cast) to get a pointer to a closure:
+If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus#cast](https://metacpan.org/pod/FFI::Platypus#cast)
+to get a pointer to a closure:
 
-    use FFI::Platypus::Declare;
-    my $clousre = closure { return $_[0]+1 };
-    my $pointer = cast '(int)->int' => 'opaque', $closure;
+    use FFI::Platypus;
+    my $ffi = FFI::Platypus;
+    my $closure = $ffi->closure(sub { return $_[0]+1 });
+    my $pointer = $ffi->cast('(int)->int' => 'opaque', $closure);
     
     $tcc->add_symbol('foo' => $pointer);
 
@@ -203,8 +206,7 @@ Add the given directory to the search path used to find libraries.
 
 Return symbol address or undef if not found.  This can be passed into 
 the [FFI::Platypus#function](https://metacpan.org/pod/FFI::Platypus#function) method, [FFI::Platypus#attach](https://metacpan.org/pod/FFI::Platypus#attach) method, 
-[FFI::Platypus::Declare#function](https://metacpan.org/pod/FFI::Platypus::Declare#function) function or similar interface that 
-takes a pointer to a C function.
+or similar interface that takes a pointer to a C function.
 
 ### output\_file
 
@@ -238,8 +240,9 @@ Do this:
 
 Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instead:
 
-    use FFI::Platypus::Declare;
-    attach [$tcc->get_symbol($name) => 'function'] => [] => 'void';
+    use FFI::Platypus;
+    my $ffi = FFI::Platypus->new;
+    $ffi->attach([$tcc->get_symbol($name) => 'function'] => [] => 'void');
     function();
 
 # EXAMPLES
@@ -265,10 +268,11 @@ Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) inste
 ## Calling Perl from Tiny C code
 
     use FFI::TinyCC;
-    use FFI::Platypus::Declare qw( opaque );
+    use FFI::Platypus;
     
-    my $say = closure { print $_[0], "\n" };
-    my $ptr = cast '(string)->void' => opaque => $say;
+    my $ffi = FFI::Platypus->new;
+    my $say = $ffi->closure(sub { print $_[0], "\n" });
+    my $ptr = $ffi->cast('(string)->void' => 'opaque' => $say);
     
     my $tcc = FFI::TinyCC->new;
     $tcc->add_symbol(say => $ptr);
@@ -294,7 +298,7 @@ Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) inste
 ## Attaching as a FFI::Platypus function from a Tiny C function
 
     use FFI::TinyCC;
-    use FFI::Platypus::Declare qw( int );
+    use FFI::Platypus;
     
     my $tcc = FFI::TinyCC->new;
     
@@ -311,7 +315,8 @@ Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) inste
     
     my $address = $tcc->get_symbol('calculate_square');
     
-    attach [$address => 'square'] => [int] => int;
+    my $ffi = FFI::Platypus->new;
+    $ffi->attach([$address => 'square'] => ['int'] => 'int');
     
     print square($value), "\n";
 
