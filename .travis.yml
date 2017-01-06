@@ -2,11 +2,14 @@ language: perl
 sudo: false
 
 install:
-  - perlbrew list
-  - dzil authordeps --missing | cpanm -n
-  - dzil listdeps --missing | cpanm -n
+  - cpanm autodie Alien::TinyCC Archive::Ar File::chdir Path::Class IPC::System::Simple
+  - cpanm FFI::Platypus FFI::Platypus::Type::StringArray
+  - perl -Iinc -MMy::DLL -E tcc_build
 
 perl:
+  - "5.8"
+  - "5.10"
+  - "5.12"
   - "5.14"
   - "5.16"
   - "5.18"
@@ -15,5 +18,5 @@ perl:
   - "5.24"
 
 script:
-  - dzil test -v
+  - prove -lv
 
