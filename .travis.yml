@@ -4,7 +4,7 @@ sudo: false
 install:
   - cpanm autodie Alien::TinyCC Archive::Ar File::chdir Path::Class IPC::System::Simple
   - cpanm FFI::Platypus FFI::Platypus::Type::StringArray
-  - perl -Iinc -MMy::DLL -E tcc_build
+  - perl -Iinc -MMy::DLL -e tcc_build
 
 perl:
   - "5.8"

@@ -26,13 +26,13 @@ directory by Module::Build when you install, but of course since you
 don't want to run dzil that isn't an option.  It is okay, you can build 
 it from the checked out git repository like this:
 
- % perl -Iinc -MMy::DLL -E tcc_build
+ % perl -Iinc -MMy::DLL -e tcc_build
 
 Take a look at the share directory you should have a libtcc.so or 
 libtcc.dll now.  If you have to switch architectures with the same 
 repository, you can clean up with this incantation:
 
- % perl -Iinc -MMy::DLL -E tcc_clean
+ % perl -Iinc -MMy::DLL -e tcc_clean
 
 Now that you have the dynamic library that FFI::TinyCC needs, you can 
 run the test suite by using prove and its -l option:
