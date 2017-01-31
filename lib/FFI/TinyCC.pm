@@ -423,7 +423,7 @@ $ffi->attach([tcc_undefine_symbol=>'undefine_symbol'] => ['tcc_t', 'string', 'st
 Set the output type.  This must be called before any compilation.
 
 Output formats may not be supported on your platform.  C<exe> is
-NOT supported on *BSD or OS X.
+NOT supported on *BSD or OS X.  It may NOT be supported on Linux.
 
 As a basic baseline at least C<memory> should be supported.
 

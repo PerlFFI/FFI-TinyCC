@@ -8,6 +8,7 @@ use File::chdir;
 use FFI::Platypus;
 use Path::Class qw( file dir );
 
+plan skip_all => 'may be unsupported';
 plan skip_all => "unsupported on $^O" if $^O =~ /bsd$/i || $^O eq 'darwin';
 plan tests => 1;
 
