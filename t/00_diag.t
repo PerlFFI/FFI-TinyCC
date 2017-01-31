@@ -14,7 +14,6 @@ $modules{$_} = $_ for qw(
   Archive::Ar
   FFI::Platypus
   FFI::Platypus::Type::StringArray
-  FFI::Raw
   File::ShareDir
   File::chdir
   IPC::System::Simple

@@ -105,9 +105,6 @@ Compile a string containing C source code.
 Add the given given symbol name / callback or pointer combination. See 
 example below for how to use this to call Perl from Tiny C code.
 
-It will accept a [FFI::Raw::Callback](https://metacpan.org/pod/FFI::Raw::Callback) at a performance penalty. If 
-possible pass in the pointer to the C entry point instead.
-
 If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus#cast](https://metacpan.org/pod/FFI::Platypus#cast)
 to get a pointer to a closure:
 
@@ -178,7 +175,7 @@ Undefine the given symbol.
 Set the output type.  This must be called before any compilation.
 
 Output formats may not be supported on your platform.  `exe` is
-NOT supported on \*BSD or OS X.
+NOT supported on \*BSD or OS X.  It may NOT be supported on Linux.
 
 As a basic baseline at least `memory` should be supported.
 
@@ -215,35 +212,6 @@ or similar interface that takes a pointer to a C function.
 Output the generated code (either executable, object or DLL) to the 
 given filename. The type of output is specified by the 
 [set\_output\_type](#set_output_type) method.
-
-### get\_ffi\_raw
-
-**DEPRECATED**
-
-    my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
-
-Given the name of a function, return an [FFI::Raw](https://metacpan.org/pod/FFI::Raw) instance that will 
-allow you to call it from Perl.
-
-This method is deprecated, and will be removed from a future version of 
-[FFI::TinyCC](https://metacpan.org/pod/FFI::TinyCC), but not before January 31, 2017.  It will issue a 
-warning if you try to use it.  Instead of this:
-
-    my $function = $tcc->get_ffi_raw($name, FFI::void);
-    $function->();
-
-Do this:
-
-    use FFI::Raw;
-    my $function = FFI::Raw->new_from_ptr($tcc->get_symbol($name), FFI::void);
-    $function->();
-
-Or better yet, use [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instead:
-
-    use FFI::Platypus;
-    my $ffi = FFI::Platypus->new;
-    $ffi->attach([$tcc->get_symbol($name) => 'function'] => [] => 'void');
-    function();
 
 # EXAMPLES
 

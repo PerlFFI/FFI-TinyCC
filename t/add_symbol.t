@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More;
 use FFI::TinyCC;
 
 my $c_code = <<EOF;
@@ -11,29 +11,6 @@ bar()
   return foo(3)*2;
 }
 EOF
-
-subtest 'FFI::Raw' => sub {
-  plan skip_all => 'test requires FFI::Raw' unless eval q{ use FFI::Raw 0.32 (); 1 };
-  plan tests => 4;
-
-  my $tcc = FFI::TinyCC->new;
-
-  my $callback = FFI::Raw::Callback->new(
-    sub { $_[0] + $_[0] },
-    FFI::Raw::int(), FFI::Raw::int(),
-  );
-
-  eval { $tcc->add_symbol('foo' => $callback) };
-  is $@, '', 'tcc.add_symbol';
-
-  eval { $tcc->compile_string($c_code) };
-  is $@, '', 'tcc.compile_string';
-
-  my $ffi = eval { FFI::Raw->new_from_ptr($tcc->get_symbol('bar'), FFI::Raw::int()) };
-  is $@, '', 'FFI::Raw.new_from_ptr';
-
-  is $ffi->call, (3+3)*2, 'ffi.call';
-};
 
 subtest 'FFI::Platypus' => sub {
   plan tests => 4;
@@ -59,3 +36,4 @@ subtest 'FFI::Platypus' => sub {
   is $f->call, (3+3)*2, 'f.call';
 };
 
+done_testing;

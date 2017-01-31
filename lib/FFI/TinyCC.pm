@@ -252,9 +252,6 @@ _method compile_string => qw( string );
 Add the given given symbol name / callback or pointer combination. See 
 example below for how to use this to call Perl from Tiny C code.
 
-It will accept a L<FFI::Raw::Callback> at a performance penalty. If 
-possible pass in the pointer to the C entry point instead.
-
 If you are using L<FFI::Platypus> you can use L<FFI::Platypus#cast>
 to get a pointer to a closure:
 
@@ -271,20 +268,7 @@ sub add_symbol
 {
   my($self, $name, $ptr) = @_;
   my $r;
-  if(ref($ptr) && eval { $ptr->isa('FFI::Raw::Callback') })
-  {
-    require FFI::Raw;
-    my($lib) = $ffi->lib;
-    my $add_symbol = FFI::Raw->new($lib, 'tcc_add_symbol',
-      FFI::Raw::int(),
-      FFI::Raw::ptr(), FFI::Raw::str(), FFI::Raw::ptr(),
-    );
-    $r = $add_symbol->call($self->{handle}, $name, $ptr);
-  }
-  else
-  {
-    $r = _add_symbol($self, $name, $ptr);
-  }
+  $r = _add_symbol($self, $name, $ptr);
   die FFI::TinyCC::Exception->new($self) if $r == -1;
   $self;
 }
@@ -511,52 +495,6 @@ L<set_output_type|/set_output_type> method.
 =cut
 
 _method output_file => qw( string );
-
-=head3 get_ffi_raw
-
-B<DEPRECATED>
-
- my $ffi = $tcc->get_ffi_raw($symbol_name, $return_type, @argument_types);
-
-Given the name of a function, return an L<FFI::Raw> instance that will 
-allow you to call it from Perl.
-
-This method is deprecated, and will be removed from a future version of 
-L<FFI::TinyCC>, but not before January 31, 2017.  It will issue a 
-warning if you try to use it.  Instead of this:
-
- my $function = $tcc->get_ffi_raw($name, FFI::void);
- $function->();
-
-Do this:
-
- use FFI::Raw;
- my $function = FFI::Raw->new_from_ptr($tcc->get_symbol($name), FFI::void);
- $function->();
-
-Or better yet, use L<FFI::Platypus> instead:
-
- use FFI::Platypus;
- my $ffi = FFI::Platypus->new;
- $ffi->attach([$tcc->get_symbol($name) => 'function'] => [] => 'void');
- function();
-
-=cut
-
-# this variable will too be removed once this module
-# is ported to FFI::Platypus, so do not depeend on it!
-our $_get_ffi_raw_deprecation = 1;
-
-sub get_ffi_raw
-{
-  carp "FFI::TinyCC->get_ffi_raw is deprecated" if $_get_ffi_raw_deprecation;
-  my($self, $symbol, @types) = @_;
-  croak "you must at least specify a return type" unless @types > 0;
-  my $ptr = $self->get_symbol($symbol);
-  croak "$symbol not found" unless $ptr;
-  require FFI::Raw;
-  FFI::Raw->new_from_ptr($self->get_symbol($symbol), @types);
-}
 
 package
   FFI::TinyCC::Exception;
