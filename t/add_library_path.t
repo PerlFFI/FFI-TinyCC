@@ -1,7 +1,5 @@
-use strict;
-use warnings;
+use Test2::V0 -no_srand => 1;
 use FindBin;
-use Test::More tests => 2;
 use FFI::TinyCC;
 use File::chdir;
 use File::Temp qw( tempdir );
@@ -18,8 +16,6 @@ note "libdir=$libdir";
 
 subtest 'create lib' => sub {
 
-  plan tests => 4;
-
   local $CWD = tempdir( CLEANUP => 1 );
   
   my $ar = Archive::Ar->new;
@@ -28,8 +24,6 @@ subtest 'create lib' => sub {
   foreach my $name (qw( one two three ))
   {
     subtest "compile $name" => sub {
-      plan tests => 5;
-    
       my $tcc = FFI::TinyCC->new;
       
       eval { $tcc->set_options($opt) };
@@ -54,7 +48,6 @@ subtest 'create lib' => sub {
   }
   
   subtest "create libonetwothree.a" => sub {
-    plan tests => 1;
     my $filename = file($libdir, 'libonetwothree.a');
     my $r = $ar->write("$filename");
     isnt $r, undef, "ar.write($filename)";
@@ -62,8 +55,6 @@ subtest 'create lib' => sub {
 };
 
 subtest 'use lib' => sub {
-
-  plan tests => 5;
 
   my $tcc = FFI::TinyCC->new;
   
@@ -84,3 +75,5 @@ subtest 'use lib' => sub {
   note $@ if $@;
 
 };
+
+done_testing;

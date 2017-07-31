@@ -1,6 +1,4 @@
-use strict;
-use warnings;
-use Test::More;
+use Test2::V0 -no_srand => 1;
 use FFI::TinyCC;
 use Config;
 use File::Temp qw( tempdir );
@@ -8,13 +6,11 @@ use File::chdir;
 use FFI::Platypus;
 use Path::Class qw( file dir );
 
-plan skip_all => 'may be unsupported';
-plan skip_all => "unsupported on $^O" if $^O =~ /bsd$/i || $^O eq 'darwin';
-plan tests => 1;
+skip_all 'may be unsupported';
+skip_all "unsupported on $^O" if $^O =~ /bsd$/i || $^O eq 'darwin';
 
 subtest exe => sub
 {
-  plan tests => 5;
   local $CWD = tempdir( CLEANUP => 1 );
 
   my $tcc = FFI::TinyCC->new;
@@ -62,3 +58,4 @@ subtest exe => sub
 
 };
 
+done_testing;

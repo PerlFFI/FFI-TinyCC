@@ -1,8 +1,6 @@
-use strict;
-use warnings;
+use Test2::V0 -no_srand => 1;
 use FindBin;
 use FFI::TinyCC;
-use Test::More tests => 1;
 use Path::Class qw( file );
 
 my $ok = subtest 'basic' => sub {
@@ -89,3 +87,4 @@ unless($ok)
   
 }
 
+done_testing;

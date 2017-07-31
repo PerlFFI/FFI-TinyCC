@@ -1,7 +1,5 @@
-use strict;
-use warnings;
+use Test2::V0 -no_srand => 1;
 use FindBin;
-use Test::More tests => 1;
 use FFI::TinyCC;
 use File::Temp qw( tempdir );
 use File::chdir;
@@ -9,8 +7,6 @@ use Path::Class qw( file dir );
 use Config;
 
 subtest 'c source code' => sub {
-  plan tests => 2;
-
   my $tcc = FFI::TinyCC->new;
   
   my $file = file($FindBin::Bin, 'c', 'return22.c');
@@ -22,3 +18,4 @@ subtest 'c source code' => sub {
   is $tcc->run, 22, 'tcc.run';
 };
 
+done_testing;

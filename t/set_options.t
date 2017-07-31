@@ -1,7 +1,5 @@
-use strict;
-use warnings;
+use Test2::V0 -no_srand => 1;
 use FindBin;
-use Test::More tests => 3;
 use FFI::TinyCC;
 use Path::Class qw( file dir );
 
@@ -29,3 +27,5 @@ main(int argc, char *argv[])
 is $@, '', 'tcc.compile_string';
 
 is $tcc->run, 22, 'tcc.run';
+
+done_testing;

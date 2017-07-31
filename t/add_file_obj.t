@@ -1,6 +1,4 @@
-use strict;
-use warnings;
-use Test::More tests => 1;
+use Test2::V0 -no_srand => 1;
 use FFI::TinyCC;
 use FFI::Platypus;
 use File::Temp qw( tempdir );
@@ -10,14 +8,11 @@ use Config;
 
 subtest 'obj' => sub {
 
-  plan tests => 2;
-  
   local $CWD = tempdir( CLEANUP => 1 );
   
   my $obj = file($CWD, "foo$Config{obj_ext}");
   
   subtest 'create' => sub {
-    plan tests => 3;
     my $tcc = FFI::TinyCC->new;
     
     eval { $tcc->set_output_type('obj') };
@@ -38,8 +33,6 @@ subtest 'obj' => sub {
   };
   
   subtest 'use' => sub {
-  
-    plan tests => 3;
   
     my $tcc = FFI::TinyCC->new;
     
@@ -64,3 +57,4 @@ subtest 'obj' => sub {
 
 };
 
+done_testing;
