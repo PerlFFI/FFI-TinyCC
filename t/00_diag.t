@@ -18,7 +18,7 @@ $modules{$_} = $_ for qw(
   File::chdir
   IPC::System::Simple
   Module::Build
-  Path::Class
+  Path::Tiny
   Test2::Require
   Test2::V0
   autodie

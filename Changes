@@ -1,7 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
-  - Migrate to File::ShareDir::Dist
+  - Migrated to internally using File::ShareDir::Dist instead of File::ShareDir
+  - Migrated to internally using Path::Tiny instead of Path::Class
 
 0.24      2017-01-31 00:04:51 -0500
   - Mark executable output as possibly not supported.  Anywhere.

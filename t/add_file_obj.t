@@ -3,14 +3,13 @@ use FFI::TinyCC;
 use FFI::Platypus;
 use File::Temp qw( tempdir );
 use File::chdir;
-use Path::Class qw( file dir );
 use Config;
 
 subtest 'obj' => sub {
 
   local $CWD = tempdir( CLEANUP => 1 );
   
-  my $obj = file($CWD, "foo$Config{obj_ext}");
+  my $obj = "$CWD/foo$Config{obj_ext}";
   
   subtest 'create' => sub {
     my $tcc = FFI::TinyCC->new;

@@ -1,13 +1,13 @@
 use Test2::V0 -no_srand => 1;
 use FindBin;
 use FFI::TinyCC;
-use Path::Class qw( file );
+use Path::Tiny qw( path );
 
 my $ok = subtest 'basic' => sub {
   my $tcc = FFI::TinyCC->new;
   isa_ok $tcc, 'FFI::TinyCC';
   
-  my $file =  file($FindBin::Bin, 'c', 'return22.c');
+  my $file =  "$FindBin::Bin/c/return22.c";
   
   eval { $tcc->add_file($file) };
   is $@, '', 'tcc.compile_string';
@@ -25,8 +25,8 @@ unless($ok)
   diag '';
   diag '';
 
-  my $share = dir($FindBin::Bin)->parent->subdir('share');
-  my $log = $share->file('build.log');
+  my $share = path($FindBin::Bin)->parent->child('share');
+  my $log = $share->child('build.log');
   
   diag "=== $log ===";
   if(-e $log)

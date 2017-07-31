@@ -4,7 +4,6 @@ use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
 use FFI::Platypus;
-use Path::Class qw( file dir );
 
 skip_all 'may be unsupported';
 skip_all "unsupported on $^O" if $^O =~ /bsd$/i || $^O eq 'darwin';
@@ -30,14 +29,14 @@ subtest exe => sub
   
   my $exe = "foo$Config{exe_ext}";
   
-  note "exe=" . file($CWD, $exe);
+  note "exe=" . "$CWD/$exe";
   
   eval { $tcc->output_file($exe) };
   is $@, '', 'tcc.output_file';
   
   ok -f $exe, "created output file";
   
-  system file($CWD, $exe), 'list', 'form';
+  system "$CWD/$exe", 'list', 'form';
   my $ret = $?;
   is $ret >> 8, 42, 'return value 42';
   unless($ret >> 8 == 42)

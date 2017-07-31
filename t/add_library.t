@@ -5,10 +5,10 @@ use File::chdir;
 use File::Temp qw( tempdir );
 use Archive::Ar 2.02;
 use Config;
-use Path::Class qw( file dir );
+use Path::Tiny qw( path );
 
-my $srcdir = dir($FindBin::Bin, 'c');
-my $libdir = dir(tempdir( CLEANUP => 1 ), 'lib');
+my $srcdir = path("$FindBin::Bin/c");
+my $libdir = path(tempdir( CLEANUP => 1 ), 'lib');
 mkdir $libdir;
 my $opt = "-I$srcdir -L$libdir";
 
@@ -29,7 +29,7 @@ subtest 'create lib' => sub {
       eval { $tcc->set_options($opt) };
       is $@, '', "tcc.set_options($opt)";
 
-      my $cfile = file($srcdir, "$name.c");
+      my $cfile = path($srcdir, "$name.c");
       
       eval { $tcc->set_output_type('obj') };
       is $@, '', 'tcc.set_output_type(obj)';
@@ -48,7 +48,7 @@ subtest 'create lib' => sub {
   }
   
   subtest "create libonetwothree.a" => sub {
-    my $filename = file($libdir, 'libonetwothree.a');
+    my $filename = path($libdir, 'libonetwothree.a');
     my $r = $ar->write("$filename");
     isnt $r, undef, "ar.write($filename)";
   };
@@ -61,7 +61,7 @@ subtest 'use lib' => sub {
   eval { $tcc->set_options($opt) };
   is $@, '', "tcc.set_options($opt)";
 
-  my $main = file($srcdir, 'main.c');
+  my $main = path($srcdir, 'main.c');
   eval { $tcc->add_file($main) };
   is $@, '', "tcc.add_file($main)";
 

@@ -1,11 +1,10 @@
 use Test2::V0 -no_srand => 1;
 use FindBin;
 use FFI::TinyCC;
-use Path::Class qw( file dir );
 
 my $tcc = FFI::TinyCC->new;
 
-my $inc = file($FindBin::Bin, 'c');
+my $inc = "$FindBin::Bin/c";
 
 note "inc=$inc";
 

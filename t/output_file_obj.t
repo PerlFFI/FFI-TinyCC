@@ -3,7 +3,6 @@ use FFI::TinyCC;
 use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
-use Path::Class qw( file dir );
 
 subtest obj => sub
 {
@@ -27,7 +26,7 @@ subtest obj => sub
     })};
     is $@, '', 'tcc.compile_string';
   
-    note "obj=" . file($CWD, $obj);
+    note "obj=" . "$CWD/$obj";
   
     eval { $tcc->output_file($obj) };
     is $@, '', 'tcc.output_file';

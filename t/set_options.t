@@ -1,9 +1,8 @@
 use Test2::V0 -no_srand => 1;
 use FindBin;
 use FFI::TinyCC;
-use Path::Class qw( file dir );
 
-my $inc = dir($FindBin::Bin, 'c');
+my $inc = "$FindBin::Bin/c";
 
 my $options = "-I$inc -L$inc -DFOO=22";
 

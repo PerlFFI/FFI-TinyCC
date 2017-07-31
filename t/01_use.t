@@ -1,7 +1,7 @@
 use Test2::V0 -no_srand => 1;
 use FindBin ();
 use File::ShareDir::Dist qw( dist_share );
-use Path::Class qw( dir );
+use Path::Tiny qw( path );
 
 sub require_ok ($);
 
@@ -20,8 +20,8 @@ unless($ok)
   diag '';
   diag '';
 
-  my $share = dir($FindBin::Bin)->parent->subdir('share');
-  my $log = $share->file('build.log');
+  my $share = path($FindBin::Bin)->parent->child('share');
+  my $log = $share->child('build.log');
   
   diag "=== $log ===";
   if(-e $log)

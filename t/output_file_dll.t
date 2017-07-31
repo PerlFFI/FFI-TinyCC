@@ -4,7 +4,6 @@ use Config;
 use File::Temp qw( tempdir );
 use File::chdir;
 use FFI::Platypus;
-use Path::Class qw( file dir );
 
 skip_all "unsupported on $^O" if $^O =~ /^(darwin|gnukfreebsd)$/;
 skip_all "unsupported on $^O $Config{archname}" if $^O eq 'linux' && $Config{archname} =~ /^arm/;
@@ -15,7 +14,7 @@ subtest dll => sub {
 
   my $tcc = FFI::TinyCC->new;
   
-  my $dll = file( $CWD, "bar." . FFI::TinyCC::_dlext() );
+  my $dll = "$CWD/bar." . FFI::TinyCC::_dlext();
   
   eval { $tcc->set_output_type('dll') };
   is $@, '', 'tcc.set_output_type(dll)';

@@ -3,7 +3,6 @@ use FFI::TinyCC;
 use FFI::Platypus;
 use File::Temp qw( tempdir );
 use File::chdir;
-use Path::Class qw( file dir );
 use Config;
 
 skip_all "unsupported on $^O" if $^O =~ /^(darwin|MSWin32|gnukfreebsd)$/;
@@ -17,7 +16,7 @@ subtest 'dll' => sub {
   
   local $CWD = tempdir( CLEANUP => 1 );
   
-  my $dll = file( $CWD, "bar." . FFI::TinyCC::_dlext() );
+  my $dll = "$CWD/bar." . FFI::TinyCC::_dlext();
 
   subtest 'create' => sub {
     my $tcc = FFI::TinyCC->new;
