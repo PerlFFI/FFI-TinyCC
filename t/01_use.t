@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 use Test::More tests => 1;
-use File::ShareDir qw( dist_dir );
+use File::ShareDir::Dist qw( dist_share );
 use Path::Class qw( dir );
 
 my $ok = subtest 'use all' => sub {
@@ -41,7 +41,7 @@ unless($ok)
   diag `$dir $share`;
   
   eval { 
-    my $dist_dir = dist_dir('FFI-TinyCC');
+    my $dist_dir = dist_share('FFI-TinyCC');
     diag "=== $dist_dir ===";
     diag "+ $dir $dist_dir";
     diag `$dir $dist_dir`;
@@ -53,7 +53,7 @@ unless($ok)
   }
 
   eval { 
-    my $dist_dir = dist_dir('Alien-TinyCC');
+    my $dist_dir = dist_share('Alien-TinyCC');
     diag "=== $dist_dir ===";
     diag "+ $dir $dist_dir";
     diag `$dir $dist_dir`;

@@ -7,6 +7,8 @@ use Config;
 use FFI::Platypus;
 use FFI::Platypus::Memory qw( malloc free );
 use Carp qw( croak carp );
+use File::Spec;
+use File::ShareDir::Dist qw( dist_share );
 
 # ABSTRACT: Tiny C Compiler for FFI
 # VERSION
@@ -76,9 +78,7 @@ sub _dlext ()
 
 our $ffi = FFI::Platypus->new;
 $ffi->lib(
-  do { $_ = __FILE__; s{TinyCC.pm}{.TinyCC.devshare}; -e $_ } 
-    ? ( 'share/libtcc.' . _dlext ) 
-    : do { require File::ShareDir; File::ShareDir::dist_file('FFI-TinyCC', 'libtcc.' . _dlext) },
+  File::Spec->catfile(dist_share( 'FFI-TinyCC' ), 'libtcc.' . _dlext)
 );
 
 $ffi->custom_type( tcc_t => {
@@ -300,7 +300,7 @@ sub detect_sysinclude_path
   if($^O eq 'MSWin32')
   {
     require File::Spec;
-    push @path_list, File::Spec->catdir(File::ShareDir::dist_dir('Alien-TinyCC'), 'include');
+    push @path_list, File::Spec->catdir(dist_share('Alien-TinyCC'), 'include');
   }
   elsif($Config{incpth})
   {
