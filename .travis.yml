@@ -2,7 +2,7 @@ language: perl
 sudo: false
 
 install:
-  - cpanm autodie Alien::TinyCC Archive::Ar File::chdir Path::Class IPC::System::Simple File::ShareDir::Dist
+  - cpanm autodie Alien::TinyCC Archive::Ar File::chdir Path::Class IPC::System::Simple File::ShareDir::Dist Test2::API Test2::V0
   - cpanm FFI::Platypus FFI::Platypus::Type::StringArray
   - perl -Iinc -MMy::DLL -e tcc_build
 
@@ -19,5 +19,5 @@ perl:
   - "5.26"
 
 script:
-  - prove -lv
+  - prove -PShreDirDist -lv
 
