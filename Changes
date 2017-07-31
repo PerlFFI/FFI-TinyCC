@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.25      2017-07-31 17:10:55 -0400
   - Migrated to internally using File::ShareDir::Dist instead of File::ShareDir
   - Migrated to internally using Path::Tiny instead of Path::Class
 
