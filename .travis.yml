@@ -19,5 +19,5 @@ perl:
   - "5.26"
 
 script:
-  - prove -PShreDirDist -lv
+  - prove -PShareDirDist -lv
 
