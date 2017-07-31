@@ -2,7 +2,7 @@ package My::DLL;
 
 use strict;
 use warnings;
-use autodie qw( :all );  # need IPC::System::Simple
+use autodie;
 use Alien::TinyCC;
 use Archive::Ar 2.02;
 use File::Temp qw( tempdir );

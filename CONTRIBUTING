@@ -13,7 +13,6 @@ You will need to install these CPAN dists to work on this dist:
  . Archive::Ar 2.02 or better
  . File::chdir
  . Path::Tiny
- . IPC::System::Simple
  . FFI::Platypus
  . FFI::Platypus::Type::StringArray
  . Test2::API

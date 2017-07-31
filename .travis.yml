@@ -2,7 +2,7 @@ language: perl
 sudo: false
 
 install:
-  - cpanm -n autodie Alien::TinyCC Archive::Ar File::chdir Path::Tiny IPC::System::Simple File::ShareDir::Dist Test2::API Test2::V0
+  - cpanm -n autodie Alien::TinyCC Archive::Ar File::chdir Path::Tiny File::ShareDir::Dist Test2::API Test2::V0
   - cpanm -n FFI::Platypus FFI::Platypus::Type::StringArray
   - perl -Iinc -MMy::DLL -e tcc_build
 

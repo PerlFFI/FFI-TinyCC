@@ -16,7 +16,6 @@ $modules{$_} = $_ for qw(
   FFI::Platypus::Type::StringArray
   File::ShareDir::Dist
   File::chdir
-  IPC::System::Simple
   Module::Build
   Path::Tiny
   Test2::Require
