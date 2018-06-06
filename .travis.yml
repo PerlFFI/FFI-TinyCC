@@ -21,3 +21,6 @@ perl:
 script:
   - prove -PShareDirDist -lv
 
+env:
+  global:
+    - PERL_USE_UNSAFE_INC=0
