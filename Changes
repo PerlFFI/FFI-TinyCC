@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - FFI::TinyCC and FFI::TinyCC::Inline are now separately distributed.
+    Older entries include the history of BOTH modules.
 
 0.26      2017-07-31 17:36:33 -0400
   - Remove dependency on IPC::System::Simple
