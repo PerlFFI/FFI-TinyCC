@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.28      2018-06-07 07:52:11 -0400
+  - Production release identical to 0.27_01
+
 0.27_01   2018-06-06 14:35:59 -0400
   - FFI::TinyCC and FFI::TinyCC::Inline are now separately distributed.
     Older entries include the history of BOTH modules.
