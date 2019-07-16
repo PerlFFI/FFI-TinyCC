@@ -3,3 +3,4 @@
 /share/libtcc.*
 /share/lib/
 /share/build.log
+/.tmp
