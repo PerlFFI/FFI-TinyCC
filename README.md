@@ -1,52 +1,56 @@
-# FFI::TinyCC [![Build Status](https://secure.travis-ci.org/Perl5-FFI/FFI-TinyCC.png)](http://travis-ci.org/Perl5-FFI/FFI-TinyCC)
+# FFI::TinyCC [![Build Status](https://travis-ci.org/PerlFFI/FFI-TinyCC.svg)](http://travis-ci.org/PerlFFI/FFI-TinyCC)
 
 Tiny C Compiler for FFI
 
 # SYNOPSIS
 
-    use FFI::TinyCC;
-    use FFI::Platypus;
-    
-    my $tcc = FFI::TinyCC->new;
-    
-    $tcc->compile_string(q{
-      int
-      find_square(int value)
-      {
-        return value*value;
-      }
-    });
-    
-    my $address = $tcc->get_symbol('find_square');
-    my $ffi = FFI::Platypus->new;
-    $ffi->attach([$address => 'find_square'] => ['int'] => 'int');
-    
-    print find_square(4), "\n"; # prints 16
+```perl
+use FFI::TinyCC;
+use FFI::Platypus;
+
+my $tcc = FFI::TinyCC->new;
+
+$tcc->compile_string(q{
+  int
+  find_square(int value)
+  {
+    return value*value;
+  }
+});
+
+my $address = $tcc->get_symbol('find_square');
+my $ffi = FFI::Platypus->new;
+$ffi->attach([$address => 'find_square'] => ['int'] => 'int');
+
+print find_square(4), "\n"; # prints 16
+```
 
 For code that requires system headers:
 
-    use FFI::TinyCC;
-    use FFI::Platypus;
-    
-    my $tcc = FFI::TinyCC->new;
-    
-    # this will throw an exception if the system
-    # include paths cannot be detected.
-    $tcc->detect_sysinclude_path;
-    
-    $tcc->compile_string(q{
-      #include <stdio.h>
-      
-      void print_hello()
-      {
-        puts("hello world");
-      }
-    });
-    
-    my $address = $tcc->get_symbol('print_hello');
-    my $ffi = FFI::Platypus->new;
-    $ffi->attach([$address => 'print_hello'] => [] => 'void');
-    print_hello();
+```perl
+use FFI::TinyCC;
+use FFI::Platypus;
+
+my $tcc = FFI::TinyCC->new;
+
+# this will throw an exception if the system
+# include paths cannot be detected.
+$tcc->detect_sysinclude_path;
+
+$tcc->compile_string(q{
+  #include <stdio.h>
+  
+  void print_hello()
+  {
+    puts("hello world");
+  }
+});
+
+my $address = $tcc->get_symbol('print_hello');
+my $ffi = FFI::Platypus->new;
+$ffi->attach([$address => 'print_hello'] => [] => 'void');
+print_hello();
+```
 
 # DESCRIPTION
 
@@ -62,7 +66,9 @@ For a simpler, but less powerful interface see [FFI::TinyCC::Inline](https://met
 
 ## new
 
-    my $tcc = FFI::TinyCC->new;
+```perl
+my $tcc = FFI::TinyCC->new;
+```
 
 Create a new TinyCC instance.
 
@@ -74,18 +80,24 @@ Methods will generally throw an exception on failure.
 
 ### set\_options
 
-    $tcc->set_options($options);
+```
+$tcc->set_options($options);
+```
 
 Set compiler and linker options, as you would on the command line, for 
 example:
 
-    $tcc->set_options('-I/foo/include -L/foo/lib -DFOO=22');
+```
+$tcc->set_options('-I/foo/include -L/foo/lib -DFOO=22');
+```
 
 ### add\_file
 
-    $tcc->add_file('foo.c');
-    $tcc->add_file('foo.o');
-    $tcc->add_file('foo.so'); # or dll on windows
+```
+$tcc->add_file('foo.c');
+$tcc->add_file('foo.o');
+$tcc->add_file('foo.so'); # or dll on windows
+```
 
 Add a file, DLL, shared object or object file.
 
@@ -93,14 +105,18 @@ On windows adding a DLL is not supported via this interface.
 
 ### compile\_string
 
-    $tcc->compile_string($c_code);
+```
+$tcc->compile_string($c_code);
+```
 
 Compile a string containing C source code.
 
 ### add\_symbol
 
-    $tcc->add_symbol($name, $callback);
-    $tcc->add_symbol($name, $pointer);
+```
+$tcc->add_symbol($name, $callback);
+$tcc->add_symbol($name, $pointer);
+```
 
 Add the given given symbol name / callback or pointer combination. See 
 example below for how to use this to call Perl from Tiny C code.
@@ -108,12 +124,14 @@ example below for how to use this to call Perl from Tiny C code.
 If you are using [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) you can use [FFI::Platypus#cast](https://metacpan.org/pod/FFI::Platypus#cast)
 to get a pointer to a closure:
 
-    use FFI::Platypus;
-    my $ffi = FFI::Platypus;
-    my $closure = $ffi->closure(sub { return $_[0]+1 });
-    my $pointer = $ffi->cast('(int)->int' => 'opaque', $closure);
-    
-    $tcc->add_symbol('foo' => $pointer);
+```perl
+use FFI::Platypus;
+my $ffi = FFI::Platypus;
+my $closure = $ffi->closure(sub { return $_[0]+1 });
+my $pointer = $ffi->cast('(int)->int' => 'opaque', $closure);
+
+$tcc->add_symbol('foo' => $pointer);
+```
 
 ## Preprocessor options
 
@@ -121,7 +139,9 @@ to get a pointer to a closure:
 
 \[version 0.18\]
 
-    $tcc->detect_sysinclude_path;
+```
+$tcc->detect_sysinclude_path;
+```
 
 Attempt to find and configure the appropriate system include directories. If 
 the platform that you are on does not (yet?) support this functionality 
@@ -133,33 +153,43 @@ Returns the list of directories added to the system include directories.
 
 ### add\_include\_path
 
-    $tcc->add_include_path($path);
+```
+$tcc->add_include_path($path);
+```
 
 Add the given path to the list of paths used to search for include files.
 
 ### add\_sysinclude\_path
 
-    $tcc->add_sysinclude_path($path);
+```
+$tcc->add_sysinclude_path($path);
+```
 
 Add the given path to the list of paths used to search for system 
 include files.
 
 ### set\_lib\_path
 
-    $tcc->set_lib_path($path);
+```
+$tcc->set_lib_path($path);
+```
 
 Set the lib path
 
 ### define\_symbol
 
-    $tcc->define_symbol($name => $value);
-    $tcc->define_symbol($name);
+```perl
+$tcc->define_symbol($name => $value);
+$tcc->define_symbol($name);
+```
 
 Define the given symbol, optionally with the specified value.
 
 ### undefine\_symbol
 
-    $tcc->undefine_symbol($name);
+```
+$tcc->undefine_symbol($name);
+```
 
 Undefine the given symbol.
 
@@ -167,10 +197,12 @@ Undefine the given symbol.
 
 ### set\_output\_type
 
-    $tcc->set_output_type('memory');
-    $tcc->set_output_type('exe');
-    $tcc->set_output_type('dll');
-    $tcc->set_output_type('obj');
+```
+$tcc->set_output_type('memory');
+$tcc->set_output_type('exe');
+$tcc->set_output_type('dll');
+$tcc->set_output_type('obj');
+```
 
 Set the output type.  This must be called before any compilation.
 
@@ -181,25 +213,35 @@ As a basic baseline at least `memory` should be supported.
 
 ### add\_library
 
-    $tcc->add_library($libname);
+```
+$tcc->add_library($libname);
+```
 
 Add the given library when linking.  Example:
 
-    $tcc->add_library('m'); # equivalent to -lm (math library)
+```
+$tcc->add_library('m'); # equivalent to -lm (math library)
+```
 
 ### add\_library\_path
 
-    $tcc->add_library_path($pathname);
+```
+$tcc->add_library_path($pathname);
+```
 
 Add the given directory to the search path used to find libraries.
 
 ### run
 
-    my $exit_value = $tcc->run(@arguments);
+```perl
+my $exit_value = $tcc->run(@arguments);
+```
 
 ### get\_symbol
 
-    my $pointer = $tcc->get_symbol($symbol_name);
+```perl
+my $pointer = $tcc->get_symbol($symbol_name);
+```
 
 Return symbol address or undef if not found.  This can be passed into 
 the [FFI::Platypus#function](https://metacpan.org/pod/FFI::Platypus#function) method, [FFI::Platypus#attach](https://metacpan.org/pod/FFI::Platypus#attach) method, 
@@ -207,7 +249,9 @@ or similar interface that takes a pointer to a C function.
 
 ### output\_file
 
-    $tcc->output_file($filename);
+```
+$tcc->output_file($filename);
+```
 
 Output the generated code (either executable, object or DLL) to the 
 given filename. The type of output is specified by the 
@@ -217,76 +261,82 @@ given filename. The type of output is specified by the
 
 ## Calling Tiny C code from Perl
 
-    use FFI::TinyCC;
-    
-    my $tcc = FFI::TinyCC->new;
-    
-    $tcc->compile_string(<<EOF);
-    int
-    main(int argc, char *argv[])
-    {
-      puts("hello world");
-    }
-    EOF
-    
-    my $r = $tcc->run;
-    
-    exit $r;
+```perl
+use FFI::TinyCC;
+
+my $tcc = FFI::TinyCC->new;
+
+$tcc->compile_string(<<EOF);
+int
+main(int argc, char *argv[])
+{
+  puts("hello world");
+}
+EOF
+
+my $r = $tcc->run;
+
+exit $r;
+```
 
 ## Calling Perl from Tiny C code
 
-    use FFI::TinyCC;
-    use FFI::Platypus;
-    
-    my $ffi = FFI::Platypus->new;
-    my $say = $ffi->closure(sub { print $_[0], "\n" });
-    my $ptr = $ffi->cast('(string)->void' => 'opaque' => $say);
-    
-    my $tcc = FFI::TinyCC->new;
-    $tcc->add_symbol(say => $ptr);
-    
-    $tcc->compile_string(<<EOF);
-    extern void say(const char *);
-    
-    int
-    main(int argc, char *argv[])
-    {
-      int i;
-      for(i=0; i<argc; i++)
-      {
-        say(argv[i]);
-      }
-    }
-    EOF
-    
-    my $r = $tcc->run($0, @ARGV);
-    
-    exit $r;
+```perl
+use FFI::TinyCC;
+use FFI::Platypus;
+
+my $ffi = FFI::Platypus->new;
+my $say = $ffi->closure(sub { print $_[0], "\n" });
+my $ptr = $ffi->cast('(string)->void' => 'opaque' => $say);
+
+my $tcc = FFI::TinyCC->new;
+$tcc->add_symbol(say => $ptr);
+
+$tcc->compile_string(<<EOF);
+extern void say(const char *);
+
+int
+main(int argc, char *argv[])
+{
+  int i;
+  for(i=0; i<argc; i++)
+  {
+    say(argv[i]);
+  }
+}
+EOF
+
+my $r = $tcc->run($0, @ARGV);
+
+exit $r;
+```
 
 ## Attaching as a FFI::Platypus function from a Tiny C function
 
-    use FFI::TinyCC;
-    use FFI::Platypus;
-    
-    my $tcc = FFI::TinyCC->new;
-    
-    $tcc->compile_string(q{
-      int
-      calculate_square(int value)
-      {
-        return value*value;
-      }
-    });
-    
-    my $value = shift @ARGV;
-    $value = 4 unless defined $value;
-    
-    my $address = $tcc->get_symbol('calculate_square');
-    
-    my $ffi = FFI::Platypus->new;
-    $ffi->attach([$address => 'square'] => ['int'] => 'int');
-    
-    print square($value), "\n";
+```perl
+use FFI::TinyCC;
+use FFI::Platypus;
+
+my $tcc = FFI::TinyCC->new;
+
+$tcc->compile_string(q{
+  int
+  calculate_square(int value)
+  {
+    return value*value;
+  }
+});
+
+my $value = shift @ARGV;
+$value = 4 unless defined $value;
+
+my $address = $tcc->get_symbol('calculate_square');
+
+my $ffi = FFI::Platypus->new;
+$ffi->attach([$address => 'square'] => ['int'] => 'int');
+
+print square($value), "\n";
+```
 
 # CAVEATS
 
@@ -315,9 +365,11 @@ from [Inline::C::Parser::RegExp](https://metacpan.org/pod/Inline::C::Parser::Reg
 
 The license details for the parser are:
 
-    Copyright 2002 Brian Ingerson
-    Copyright 2008, 2010-2012 Sisyphus
-    Copyright 2013 Steffen Muellero
+```
+Copyright 2002 Brian Ingerson
+Copyright 2008, 2010-2012 Sisyphus
+Copyright 2013 Steffen Muellero
+```
 
 This program is free software; you can redistribute it and/or modify it 
 under the same terms as Perl itself.
