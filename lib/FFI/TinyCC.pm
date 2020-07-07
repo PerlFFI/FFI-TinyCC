@@ -315,7 +315,7 @@ sub detect_sysinclude_path
     my($fh, $filename) = File::Temp::tempfile( "tryXXXX", SUFFIX => '.c', UNLINK => 1 );
     close $fh;
     
-    my @lines = `$Config{cpp} -v $filename 2>&1`;
+    my @lines = `$Config{cpprun} -v $filename 2>&1`;
     
     shift @lines while defined $lines[0] && $lines[0] !~ /^#include </;
     shift @lines;
