@@ -1,4 +1,4 @@
-# FFI::TinyCC [![Build Status](https://travis-ci.org/PerlFFI/FFI-TinyCC.svg)](http://travis-ci.org/PerlFFI/FFI-TinyCC)
+# FFI::TinyCC ![linux](https://github.com/PerlFFI/FFI-TinyCC/workflows/linux/badge.svg)
 
 Tiny C Compiler for FFI
 
