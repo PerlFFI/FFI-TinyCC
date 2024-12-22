@@ -4,3 +4,5 @@
 /share/lib/
 /share/build.log
 /.tmp
+*.old
+*.orig
